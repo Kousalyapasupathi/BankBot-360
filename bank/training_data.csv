@@ -1,0 +1,643 @@
+text,intent,split
+கணக்கு வரலாறு காட்டு,view_history,train
+display transaction history,view_history,train
+put money in my account,deposit,train
+can i see my transactions,view_history,train
+monthly summary,analytics,train
+last 10 transactions,mini_statement,train
+மாத செலவு சுருக்கம்,analytics,train
+show recent activity,view_history,train
+set up automatic transfer,schedule_transfer,train
+last three transactions,mini_statement,train
+என் பரிவர்த்தனைகள் காட்டு,view_history,train
+பரிமாற்றம் செய்,transfer_money,train
+வணக்கம்,greeting,train
+online transfer,transfer_money,train
+mini statement dikhao,mini_statement,train
+alvida,goodbye,train
+deposit cash,deposit,test
+show analytics,analytics,train
+move money to another account,transfer_money,train
+ok thanks,goodbye,train
+loan eligibility,faq_loan,train
+add funds,deposit,train
+बैंक का समय,faq_timing,train
+suspicious transaction hai,fraud_alert,test
+is bank open on sundays,faq_timing,train
+what is my current balance,check_balance,train
+mera balance kya hai,check_balance,train
+bank timings,faq_timing,train
+மோசடி பரிவர்த்தனை,fraud_alert,train
+kya aaj bank khula hai,faq_timing,train
+send payment,transfer_money,train
+greetings,greeting,train
+hi,greeting,train
+கணக்கிற்கு பணம் அனுப்பு,transfer_money,test
+do a bank transfer,transfer_money,train
+view my past transactions,view_history,train
+धन्यवाद,goodbye,train
+i want to remit money,transfer_money,train
+i would like to deposit,deposit,train
+show me how i spend my money,analytics,train
+kitna paisa hai,check_balance,train
+i need to deposit some cash,deposit,train
+what is the amount in my account,check_balance,train
+how much is in my account,check_balance,train
+please cancel my last transaction,cancel_transfer,train
+i need a loan,faq_loan,test
+future dated transfer,schedule_transfer,train
+मेरा बैलेंस क्या है,check_balance,train
+mujhe loan chahiye,faq_loan,train
+live agent,connect_banker,test
+send 1000 to account 10003,transfer_money,train
+speak to representative,connect_banker,train
+i want to pay,transfer_money,train
+hello,greeting,train
+check my account,check_balance,train
+done for now,goodbye,train
+reverse the last transfer,cancel_transfer,train
+धोखाधड़ी,fraud_alert,train
+expense analysis,analytics,train
+stop the last transfer,cancel_transfer,test
+balance kitna hai,check_balance,test
+cancel that transfer,cancel_transfer,test
+help,greeting,train
+education loan,faq_loan,train
+baad mein paise bhejna hai,schedule_transfer,train
+expense report,analytics,train
+bank representative se milao,connect_banker,train
+is the bank open today,faq_timing,train
+transfer money,transfer_money,test
+i got an unknown debit,fraud_alert,train
+பேலன்ஸ் எவ்வளவு,check_balance,train
+apply for loan,faq_loan,train
+payment history,view_history,train
+automatic transfer set karo,schedule_transfer,train
+என் கணக்கை ப்ளாக் செய்,fraud_alert,train
+how are you,greeting,train
+someone used my account without permission,fraud_alert,train
+meri transactions dikhao,view_history,train
+how much do i have in my bank,check_balance,train
+personal loan apply karna hai,faq_loan,train
+unauthorized transaction,fraud_alert,train
+தானியங்கி பரிமாற்றம்,schedule_transfer,train
+கடைசி 5 பரிவர்த்தனைகள்,mini_statement,test
+पैसे ट्रांसफर करें,transfer_money,test
+connect to agent,connect_banker,train
+analyze my spending,analytics,train
+set up a recurring transfer,schedule_transfer,test
+please connect me to an agent,connect_banker,train
+transfer cancel karo,cancel_transfer,train
+view my account statement,view_history,train
+logout,goodbye,train
+fraud detected,fraud_alert,train
+talk to banker,connect_banker,train
+suspicious activity on my account,fraud_alert,train
+இருப்பு காட்டு,check_balance,train
+i want to schedule a payment,schedule_transfer,train
+கடன் விண்ணப்பம்,faq_loan,train
+chhota statement,mini_statement,train
+what is my balance,check_balance,train
+do a transfer later,schedule_transfer,test
+என் கணக்கில் எவ்வளவு பணம் இருக்கிறது,check_balance,test
+hello bank,greeting,train
+மினி ஸ்டேட்மெண்ட்,mini_statement,train
+கடைசி பரிமாற்றத்தை ரத்து செய்,cancel_transfer,train
+reverse transaction,cancel_transfer,train
+my balance,check_balance,train
+பணம் போடு,deposit,train
+balance dikhao,check_balance,train
+show me my transaction history,view_history,test
+connect to support,connect_banker,train
+show mini statement,mini_statement,train
+fund transfer karo,transfer_money,train
+what is the balance in my account,check_balance,test
+காலை வணக்கம்,greeting,train
+fetch my balance,check_balance,train
+human support,connect_banker,test
+fund my account,deposit,train
+all transactions,view_history,train
+undo last transaction,cancel_transfer,test
+send money,transfer_money,train
+வங்கி கஸ்டமர் கேர் இணை,connect_banker,train
+i want to see my transaction history,view_history,train
+mujhe madad chahiye,greeting,test
+नमस्ते,greeting,test
+சேமிப்பு வட்டி,faq_interest,train
+check balance,check_balance,train
+past transactions,view_history,train
+automate money transfer,schedule_transfer,train
+i want to apply for a loan,faq_loan,train
+connect me to customer care,connect_banker,test
+bank opening time,faq_timing,train
+send money at a later date,schedule_transfer,train
+pichle transactions,view_history,test
+schedule money transfer,schedule_transfer,train
+plan a future transfer,schedule_transfer,train
+agent please,connect_banker,train
+when does branch open,faq_timing,train
+loan chahiye,faq_loan,train
+ok bye,goodbye,train
+என் பணம் எவ்வளவு,check_balance,train
+can i get a loan,faq_loan,train
+how much money do i have,check_balance,train
+unauthorized debit,fraud_alert,train
+can you tell me my balance,check_balance,train
+can i transfer money,transfer_money,train
+நான் உதவி வேண்டும்,greeting,train
+spending breakdown,analytics,train
+how much rupees do i have,check_balance,train
+theek hai bye,goodbye,train
+wire transfer,transfer_money,train
+when is the bank open,faq_timing,train
+good morning,greeting,train
+suspicious transaction,fraud_alert,train
+what is the interest rate,faq_interest,train
+cancel the transaction,cancel_transfer,train
+top up my account,deposit,train
+credit 5000 to my account,deposit,train
+வட்டி விகிதம்,faq_interest,train
+kitna kharch kiya,analytics,test
+bank hours,faq_timing,train
+personal loan,faq_loan,train
+where did i spend my money,analytics,test
+கணக்கில் பணம் சேர்,deposit,train
+how to get a loan,faq_loan,train
+சுருக்க அறிக்கை,mini_statement,train
+balance inquiry,check_balance,test
+view mini statement,mini_statement,train
+spending insights,analytics,train
+cancel last transfer,cancel_transfer,train
+வீட்டு கடன்,faq_loan,train
+balance status,check_balance,train
+expense tracker,analytics,test
+increase my balance,deposit,train
+can you help me,greeting,train
+neft transfer,transfer_money,train
+transfer to another account,transfer_money,train
+make a transfer,transfer_money,train
+बैलेंस चेक करें,check_balance,train
+account activity,view_history,train
+please show my balance,check_balance,train
+there is a fraud transaction,fraud_alert,train
+hi bot,greeting,test
+bye,goodbye,test
+வங்கி நேரம் என்ன,faq_timing,train
+hello there,greeting,train
+what time does the bank open,faq_timing,train
+balance add karo,deposit,train
+customer care,connect_banker,train
+पैसा भेजना है,transfer_money,train
+recent transactions,view_history,train
+transaction history dikhao,view_history,train
+show me all my transactions,view_history,train
+mujhe fraud report karna hai,fraud_alert,train
+நன்றி,goodbye,train
+transfer funds to my friend,transfer_money,train
+speak with a banker,connect_banker,test
+list all my transactions,view_history,train
+thanks a lot,goodbye,train
+cash deposit,deposit,train
+see you,goodbye,train
+revert transfer,cancel_transfer,train
+financial summary,analytics,train
+வரலாறு காட்டு,view_history,train
+quick statement,mini_statement,train
+schedule a transfer,schedule_transfer,train
+schedule transfer karo,schedule_transfer,train
+where did my money go,view_history,train
+how much did i spend,analytics,train
+home loan,faq_loan,train
+report fraud,fraud_alert,train
+remaining balance,check_balance,train
+savings account interest rate,faq_interest,train
+paisa jama karna hai,deposit,train
+spending report,analytics,train
+undo my last payment,cancel_transfer,train
+add money,deposit,train
+my money was stolen,fraud_alert,train
+car loan,faq_loan,train
+how much interest on savings,faq_interest,train
+fd rate,faq_interest,train
+someone stole money from my account,fraud_alert,train
+home loan kaise milega,faq_loan,test
+मिनी स्टेटमेंट,mini_statement,train
+आखिरी 5 लेनदेन,mini_statement,test
+thanks,goodbye,train
+loan requirements,faq_loan,train
+savings par kitna byaj milega,faq_interest,train
+pichla payment wapis karo,cancel_transfer,train
+balance check,check_balance,train
+ब्याज दर,faq_interest,train
+account balance batao,check_balance,train
+escalate to human,connect_banker,train
+namaste,greeting,train
+loan application,faq_loan,train
+show me my spending,analytics,train
+i want to deposit money,deposit,test
+add money to my account,deposit,train
+freeze my account,fraud_alert,train
+மனித உதவி வேண்டும்,connect_banker,train
+show my account statement,view_history,test
+show transaction history,view_history,train
+account mein paise bhejo,transfer_money,train
+unauthorized payment,fraud_alert,train
+display my balance,check_balance,train
+when does bank open,faq_timing,train
+exit,goodbye,test
+hi there,greeting,train
+சந்தேகமான பரிவர்த்தனை,fraud_alert,train
+scheduled payment,schedule_transfer,test
+available balance,check_balance,test
+okay bye,goodbye,train
+hey,greeting,train
+thank you,goodbye,train
+account ki history batao,view_history,train
+home loan interest rate,faq_interest,train
+my spending patterns,analytics,train
+illegal transaction,fraud_alert,train
+i want to send money,transfer_money,train
+talk to customer support,connect_banker,train
+ஒரு பரிவர்த்தனை திட்டமிடு,schedule_transfer,train
+show me my balance,check_balance,train
+transfer schedule karna hai,schedule_transfer,train
+credit my account,deposit,train
+i want to see my balance,check_balance,train
+வங்கி எப்போது திறக்கும்,faq_timing,test
+bank holidays,faq_timing,train
+bank transfer karna hai,transfer_money,train
+டெபாசிட் செய்,deposit,test
+help chahiye,greeting,train
+पैसे जमा करने हैं,deposit,train
+मेरे लेनदेन दिखाओ,view_history,test
+என் கணக்கில் திருட்டு நடந்தது,fraud_alert,train
+நிதி பகுப்பாய்வு,analytics,train
+show me the last 5 payments,mini_statement,test
+मेरे खाते में कितना पैसा है,check_balance,train
+பணம் மாற்று,transfer_money,train
+book a future payment,schedule_transfer,train
+goodbye,goodbye,test
+send funds,transfer_money,train
+mera last transfer cancel karo,cancel_transfer,train
+get me a human agent,connect_banker,train
+schedule payment for tomorrow,schedule_transfer,train
+mini statement,mini_statement,train
+help me,greeting,train
+bank kab khulta hai,faq_timing,test
+what are my last transactions,mini_statement,train
+brief transaction summary,mini_statement,train
+hello ji,greeting,train
+i want to reverse my payment,cancel_transfer,train
+i need to speak with someone,connect_banker,train
+last 5 transactions dikhao,mini_statement,train
+pay to account,transfer_money,train
+block my account,fraud_alert,train
+real agent chahiye,connect_banker,train
+current interest rates,faq_interest,train
+bank timing kya hai,faq_timing,train
+reverse last payment,cancel_transfer,train
+can i see last 5 transactions,mini_statement,train
+i need help from a person,connect_banker,train
+mera account hack ho gaya,fraud_alert,test
+customer care se connect karo,connect_banker,train
+show me last few transactions,mini_statement,train
+spending report chahiye,analytics,train
+recent 5 transactions,mini_statement,train
+my transactions,view_history,train
+போகிறேன்,goodbye,train
+சரி நன்றி,goodbye,train
+personal loan interest,faq_interest,train
+bank closing time,faq_timing,train
+does the bank work on saturday,faq_timing,train
+paisa bhejo,transfer_money,train
+i made a mistake please cancel,cancel_transfer,train
+खर्च विश्लेषण,analytics,train
+show my account balance,check_balance,test
+that's all,goodbye,train
+can you check my account balance,check_balance,train
+add balance,deposit,train
+पैसे भेजें,transfer_money,train
+start,greeting,test
+block account now,fraud_alert,train
+i am done,goodbye,train
+செலவு பகுப்பாய்வு,analytics,train
+ஹலோ,greeting,train
+i want to talk to someone,connect_banker,train
+short statement,mini_statement,train
+my account is compromised,fraud_alert,train
+agent se baat,connect_banker,train
+hey there,greeting,train
+கடன் வேண்டும்,faq_loan,test
+கடன் வட்டி,faq_interest,train
+जमा करें,deposit,train
+i need help,greeting,train
+how do i borrow money,faq_loan,train
+add 2000 to my balance,deposit,train
+can you show me my account history,view_history,train
+tell me my account balance,check_balance,train
+i want to report fraud,fraud_alert,test
+transaction undo karo,cancel_transfer,train
+what interest do i earn,faq_interest,train
+मेरा खर्च दिखाओ,analytics,train
+take care,goodbye,train
+bank working hours,faq_timing,train
+fixed deposit interest rate,faq_interest,train
+இருப்பு நிலை என்ன,check_balance,train
+deposit karo,deposit,train
+unknown transaction in my account,fraud_alert,test
+i want a banker,connect_banker,train
+please transfer money,transfer_money,train
+shukriya,goodbye,train
+vehicle loan,faq_loan,train
+transfer 500 rupees,transfer_money,train
+account mein paisa dalo,deposit,test
+last 5 transactions,mini_statement,train
+yeh transaction maine nahi kiya,fraud_alert,train
+transfer at a future date,schedule_transfer,train
+imps transfer,transfer_money,train
+send money to account number,transfer_money,train
+auto transfer,schedule_transfer,train
+i want to check my balance,check_balance,train
+account freeze karo,fraud_alert,train
+get my transaction records,view_history,train
+interest rate,faq_interest,train
+pay someone,transfer_money,train
+can i deposit money,deposit,train
+வங்கி நேரம்,faq_timing,test
+interest on fixed deposit,faq_interest,test
+mujhe insaan se baat karni hai,connect_banker,train
+i was scammed,fraud_alert,test
+பணம் அனுப்பு,transfer_money,train
+என் இருப்பு என்ன,check_balance,train
+வங்கி அதிகாரியிடம் பேசு,connect_banker,train
+fund transfer,transfer_money,train
+i want to transfer money,transfer_money,train
+deposit 1000,deposit,train
+transfer 5000 to 10002,transfer_money,test
+good afternoon,greeting,train
+i want human help,connect_banker,train
+can i cancel my transfer,cancel_transfer,train
+i did not make this transaction,fraud_alert,train
+show me my payment history,view_history,train
+interest rate kya hai,faq_interest,test
+deposit money,deposit,train
+loan interest,faq_interest,train
+make a payment,transfer_money,train
+account band karo,fraud_alert,train
+get my current balance,check_balance,train
+unknown debit from my account,fraud_alert,train
+show me mini statement,mini_statement,train
+how much can i spend,check_balance,train
+view history,view_history,train
+i want to speak to a real person,connect_banker,train
+பரிவர்த்தனை வரலாறு,view_history,train
+கடைசி பரிவர்த்தனை திரும்பப் பெறு,cancel_transfer,train
+good evening,greeting,train
+my account has been hacked,fraud_alert,train
+what is my bank balance right now,check_balance,train
+i want to cancel my last transfer,cancel_transfer,train
+transfer karo,transfer_money,test
+fd rate kya hai,faq_interest,train
+i want to know my balance,check_balance,train
+लेनदेन का इतिहास,view_history,train
+இருபது ரூபாய் அனுப்பணும்,transfer_money,train
+இருபது ரூபாய் அனுப்பு,transfer_money,train
+நூறு ரூபாய் அனுப்பணும்,transfer_money,train
+ஐநூறு ரூபாய் அனுப்பணும்,transfer_money,train
+ஆயிரம் ரூபாய் அனுப்பணும்,transfer_money,train
+ஐயாயிரம் ரூபாய் அனுப்பணும்,transfer_money,train
+பத்தாயிரம் ரூபாய் அனுப்பணும்,transfer_money,train
+இரண்டாயிரம் அனுப்பணும்,transfer_money,train
+மூவாயிரம் அனுப்பணும்,transfer_money,train
+கணக்கிற்கு பணம் போடணும்,transfer_money,train
+இந்த கணக்கிற்கு அனுப்பணும்,transfer_money,train
+பணம் ட்ரான்ஸ்ஃபர் பண்ணணும்,transfer_money,train
+ட்ரான்ஸ்ஃபர் பண்ணு,transfer_money,train
+பணம் மாத்து,transfer_money,train
+அனுப்பணும் பணம்,transfer_money,train
+பணம் அனுப்பணும்,transfer_money,train
+கொஞ்சம் பணம் அனுப்பணும்,transfer_money,train
+உடனே பணம் அனுப்பு,transfer_money,train
+இப்போவே அனுப்பணும்,transfer_money,train
+பணம் அனுப்ப முடியுமா,transfer_money,train
+transfer பண்ண வேண்டும்,transfer_money,train
+money transfer பண்ணணும்,transfer_money,train
+ரூபாய் அனுப்பணும்,transfer_money,train
+500 ரூபாய் அனுப்பணும்,transfer_money,train
+1000 ரூபாய் transfer பண்ணு,transfer_money,train
+எவ்வளவு பணம் இருக்கு,check_balance,train
+என்னோட balance என்ன,check_balance,train
+balance பாரு,check_balance,train
+கணக்கில் எவ்வளவு இருக்கு,check_balance,train
+இருப்பு எவ்வளவு,check_balance,train
+பணம் எவ்வளவு இருக்கு,check_balance,train
+balance சொல்லு,check_balance,train
+என் கணக்கு பாரு,check_balance,train
+account balance பாரு,check_balance,train
+இன்னைக்கு balance என்ன,check_balance,train
+பரிவர்த்தனை வரலாறு காட்டு,view_history,train
+என் transaction பாரு,view_history,train
+கடந்த transactions காட்டு,view_history,train
+history பாரு,view_history,train
+என்ன என்ன transactions நடந்தது,view_history,train
+பழைய transactions,view_history,train
+கடைசி பரிவர்த்தனைகள் காட்டு,mini_statement,train
+5 transactions காட்டு,mini_statement,train
+சின்னா statement வேணும்,mini_statement,train
+சுருக்கமா transactions சொல்லு,mini_statement,train
+கடைசி transfers காட்டு,mini_statement,train
+ரத்து பண்ணு,cancel_transfer,train
+transfer ரத்து பண்ணணும்,cancel_transfer,train
+அனுப்பியதை திரும்ப வாங்கணும்,cancel_transfer,train
+கடைசி transfer cancel பண்ணு,cancel_transfer,train
+அந்த பணம் திரும்ப வேணும்,cancel_transfer,train
+transfer தவறா போச்சு ரத்து பண்ணணும்,cancel_transfer,train
+பணம் போட்டது cancel பண்ணணும்,cancel_transfer,train
+வட்டி எவ்வளவு,faq_interest,train
+சேமிப்பு வட்டி எவ்வளவு,faq_interest,train
+loan வட்டி என்ன,faq_interest,train
+FD rate என்ன,faq_interest,train
+வங்கி வட்டி சொல்லு,faq_interest,train
+வங்கி எத்தனை மணிக்கு திறக்கும்,faq_timing,train
+வங்கி இன்னைக்கு திறந்திருக்கா,faq_timing,train
+நாளைக்கு வங்கி திறக்குமா,faq_timing,train
+வங்கி நேரம் என்ன,faq_timing,train
+வங்கி எப்போ மூடும்,faq_timing,train
+கடன் எப்படி வாங்குவது,faq_loan,train
+loan வேணும்,faq_loan,train
+personal loan பண்ணணும்,faq_loan,train
+கடன் விண்ணப்பம் எப்படி,faq_loan,train
+home loan கிடைக்குமா,faq_loan,train
+வங்கி அதிகாரியை கூப்பிடு,connect_banker,train
+customer care கூப்பிடணும்,connect_banker,train
+ஆளை கூப்பிடு,connect_banker,train
+மனிதர் வேணும்,connect_banker,train
+support வேணும்,connect_banker,train
+agent கூப்பிடு,connect_banker,train
+மோசடி நடந்துவிட்டது,fraud_alert,train
+என் account hack ஆச்சு,fraud_alert,train
+தெரியாம பணம் போச்சு,fraud_alert,train
+யாரோ என் account use பண்ணாங்க,fraud_alert,train
+fraud report பண்ணணும்,fraud_alert,train
+account block பண்ணு,fraud_alert,train
+செலவு analysis வேணும்,analytics,train
+எங்க எங்க பணம் போச்சு,analytics,train
+spending பாரு,analytics,train
+இந்த மாசம் எவ்வளவு செலவு,analytics,train
+analytics காட்டு,analytics,train
+deposit பண்ணணும்,deposit,train
+கணக்கில் போடணும்,deposit,train
+பணம் போடணும்,deposit,train
+cash போடணும்,deposit,train
+balance charge பண்ணணும்,deposit,train
+நாளைக்கு transfer போடணும்,schedule_transfer,train
+பிறகு அனுப்பணும்,schedule_transfer,train
+schedule பண்ணணும்,schedule_transfer,train
+future date transfer வேணும்,schedule_transfer,train
+bees rupaye bhejo,transfer_money,train
+sau rupaye bhejo,transfer_money,train
+paanch sau bhejo,transfer_money,train
+ek hazaar bhejo,transfer_money,train
+do hazaar transfer karo,transfer_money,train
+teen hazaar bhejne hain,transfer_money,train
+paisa transfer kar do,transfer_money,train
+abhi paisa bhejo,transfer_money,train
+jaldi transfer karo,transfer_money,train
+paise bhejo please,transfer_money,train
+account mein kitna hai,check_balance,train
+mera paisa kitna hai,check_balance,train
+balance abhi kya hai,check_balance,train
+kitna bachha hai,check_balance,train
+paisa check karo,check_balance,train
+account dekhao,check_balance,train
+meri history dikhao,view_history,train
+mera statement dikhao,view_history,train
+transaction dikhao,view_history,train
+pichle paise kahan gaye,view_history,train
+chota statement chahiye,mini_statement,train
+5 transaction batao,mini_statement,train
+last kuch transactions,mini_statement,train
+thoda sa statement,mini_statement,train
+transfer wapis karo,cancel_transfer,train
+galti se bheja wapis lao,cancel_transfer,train
+undo karo transfer,cancel_transfer,train
+cancel kar do,cancel_transfer,train
+transfer rok do,cancel_transfer,train
+byaj kitna milega,faq_interest,train
+savings ka byaj kya hai,faq_interest,train
+loan ka byaj,faq_interest,train
+bank kab khulta,faq_timing,train
+aaj bank khula hai kya,faq_timing,train
+bank ka time kya hai,faq_timing,train
+saturday ko bank khula hai,faq_timing,train
+loan kaise milega,faq_loan,train
+loan ke liye kya karna hoga,faq_loan,train
+ghar ka loan chahiye,faq_loan,train
+paisa jama karo,deposit,train
+cash jama karna hai,deposit,train
+khate mein paisa dalo,deposit,train
+dhoka hua hai,fraud_alert,train
+mera account band karo,fraud_alert,train
+paise chori ho gaye,fraud_alert,train
+kharcha dikhao,analytics,train
+mera kharcha kitna hai,analytics,train
+is mahine kitna kharch kiya,analytics,train
+baad mein transfer karna hai,schedule_transfer,train
+kal ke liye transfer schedule karo,schedule_transfer,train
+auto transfer lagao,schedule_transfer,train
+insaan se baat karni hai,connect_banker,train
+koi aadmi chahiye,connect_banker,train
+help karo bhai,greeting,train
+kya kar sakte ho,greeting,train
+main kya karoon,greeting,train
+send twenty rupees,transfer_money,train
+send fifty bucks,transfer_money,train
+send a hundred,transfer_money,train
+transfer two hundred,transfer_money,train
+pay five hundred,transfer_money,train
+move a thousand rupees,transfer_money,train
+i need to send some money,transfer_money,train
+can you send money for me,transfer_money,train
+how do i transfer money,transfer_money,train
+please send the money,transfer_money,train
+i want to make a payment,transfer_money,train
+pay my friend,transfer_money,train
+remit funds,transfer_money,train
+dispatch payment,transfer_money,train
+push money to account,transfer_money,train
+how much do i have left,check_balance,train
+whats in my account,check_balance,train
+tell me my balance please,check_balance,train
+balance please,check_balance,train
+funds available,check_balance,train
+account total,check_balance,train
+show all transactions,view_history,train
+give me transaction history,view_history,train
+i want history,view_history,train
+show my payments,view_history,train
+all my payments,view_history,train
+last few transactions,mini_statement,train
+quick summary,mini_statement,train
+last 5,mini_statement,train
+show 5 transactions,mini_statement,train
+recent 5,mini_statement,train
+please cancel,cancel_transfer,train
+i want to cancel,cancel_transfer,train
+take it back,cancel_transfer,train
+i sent money by mistake,cancel_transfer,train
+wrong transfer please reverse,cancel_transfer,train
+stop that payment,cancel_transfer,train
+get my money back,cancel_transfer,train
+cancel the payment i just made,cancel_transfer,train
+what's the interest,faq_interest,train
+tell me about interest rates,faq_interest,train
+savings rate,faq_interest,train
+fd interest,faq_interest,train
+home loan rate,faq_interest,train
+is bank open,faq_timing,train
+bank open today,faq_timing,train
+opening hours,faq_timing,train
+when do you close,faq_timing,train
+bank schedule,faq_timing,train
+working days,faq_timing,train
+how to apply loan,faq_loan,train
+loan process,faq_loan,train
+do you offer loans,faq_loan,train
+business loan,faq_loan,train
+two wheeler loan,faq_loan,train
+gold loan,faq_loan,train
+top up my deposit,deposit,train
+i want to add cash,deposit,train
+put cash in account,deposit,train
+add 500 to my account,deposit,train
+deposit five thousand,deposit,train
+my account was breached,fraud_alert,train
+i see an unfamiliar charge,fraud_alert,train
+unexpected debit,fraud_alert,train
+i didn't authorize this,fraud_alert,train
+lock my account,fraud_alert,train
+spending analysis,analytics,train
+monthly spending,analytics,train
+how much did i spend this month,analytics,train
+show my expenses,analytics,train
+charts of my spending,analytics,train
+schedule for later,schedule_transfer,train
+set a future payment,schedule_transfer,train
+pay tomorrow,schedule_transfer,train
+recurring transfer,schedule_transfer,train
+schedule next week,schedule_transfer,train
+talk to someone,connect_banker,train
+connect me to support,connect_banker,train
+human please,connect_banker,train
+live chat with agent,connect_banker,train
+need assistance from staff,connect_banker,train
+good day,greeting,train
+good night,greeting,train
+hey bank,greeting,train
+whats up,greeting,train
+hi smartbank,greeting,train
+take care bye,goodbye,train
+all done,goodbye,train
+signing off,goodbye,train
+i'm done for today,goodbye,train
+close this session,goodbye,train

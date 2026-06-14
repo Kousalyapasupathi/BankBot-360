@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartBank — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#f8f4ed; --gold:#b8962e; --gold2:#d4af50;
+  --surface:#ffffff; --card:#ffffff; --card2:#faf7f0;
+  --border:rgba(184,150,46,0.3); --border2:rgba(184,150,46,0.12);
+  --text:#2a1f0a; --dim:#6b5e3a; --muted:#a89060;
+  --green:#3fcf71; --red:#f55; --blue:#4a9eff; --purple:#a855f7; --orange:#ff9f43;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--text);min-height:100vh;display:flex;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:220px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--border);box-shadow:2px 0 16px rgba(184,150,46,0.08);
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sb-logo{
+  padding:20px 16px;border-bottom:1px solid var(--border);
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
+}
+.sb-logo span{color:var(--gold);}
+.sb-badge{
+  display:inline-block;margin-top:4px;padding:2px 10px;border-radius:100px;
+  background:rgba(184,150,46,0.12);border:1px solid rgba(184,150,46,0.3);
+  color:var(--purple);font-size:10px;font-weight:600;letter-spacing:1px;
+}
+.sb-user{padding:14px 16px;border-bottom:1px solid var(--border);}
+.sb-avatar{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--purple),#6b21a8);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;margin-bottom:6px;
+}
+.sb-name{font-size:12px;font-weight:600;}
+.sb-role{font-size:10px;color:var(--dim);}
+.sb-nav{flex:1;padding:10px 8px;}
+.nav-section{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 8px 4px;}
+.nav-btn{
+  width:100%;display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:9px;
+  font-size:12px;font-weight:500;color:var(--dim);
+  border:none;background:none;cursor:pointer;
+  transition:all 0.15s;text-align:left;margin-bottom:1px;
+}
+.nav-btn:hover{background:rgba(184,150,46,0.08);color:#2a1f0a;}
+.nav-btn.active{background:rgba(200,168,75,0.12);color:var(--gold);}
+.nav-icon{font-size:15px;width:18px;text-align:center;}
+.sb-badge-count{
+  margin-left:auto;padding:1px 7px;border-radius:100px;
+  background:rgba(255,85,85,0.2);color:var(--red);font-size:10px;font-weight:700;
+}
+.sb-footer{padding:10px 8px;border-top:1px solid var(--border);}
+.btn-logout{
+  width:100%;padding:9px 12px;border-radius:9px;
+  background:rgba(255,85,85,0.08);border:1px solid rgba(255,85,85,0.2);
+  color:var(--red);font-size:12px;font-weight:500;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:all 0.15s;
+}
+.btn-logout:hover{background:rgba(255,85,85,0.15);}
+
+/* ── MAIN ── */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.topbar{
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  background:rgba(248,244,237,0.92);backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:50;
+}
+.topbar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.top-badge{
+  padding:5px 12px;border-radius:100px;
+  font-size:11px;font-weight:600;
+}
+.live-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--green);
+  animation:pulse 2s infinite;display:inline-block;margin-right:6px;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.btn-refresh{
+  padding:6px 14px;border-radius:8px;font-size:12px;
+  border:1px solid var(--border);background:rgba(184,150,46,0.06);
+  color:#2a1f0a;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;
+}
+.btn-refresh:hover{background:rgba(184,150,46,0.08);}
+
+.content{padding:20px 24px;flex:1;}
+.section{display:none;animation:fadeIn 0.2s ease;}
+.section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── STAT CARDS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px;}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);box-shadow:0 2px 12px rgba(184,150,46,0.07);
+  border-radius:14px;padding:18px;position:relative;overflow:hidden;
+}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:currentColor;opacity:0.4;}
+.stat-icon{font-size:24px;margin-bottom:10px;}
+.stat-label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;}
+.stat-value{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#2a1f0a;}
+.stat-sub{font-size:11px;color:var(--dim);margin-top:3px;}
+.c-gold{color:var(--gold);}
+.c-green{color:var(--green);}
+.c-blue{color:var(--blue);}
+.c-red{color:var(--red);}
+.c-purple{color:var(--purple);}
+.c-orange{color:var(--orange);}
+
+/* ── TABLE ── */
+.tbl-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.tbl-head{
+  padding:14px 18px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;
+}
+.tbl-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.tbl-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.search-box{
+  padding:7px 12px;background:rgba(184,150,46,0.04);
+  border:1px solid var(--border);border-radius:8px;
+  color:#2a1f0a;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;
+  width:180px;transition:border-color 0.2s;
+}
+.search-box:focus{border-color:var(--gold);}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{
+  padding:9px 14px;text-align:left;
+  font-size:10px;font-weight:600;color:var(--dim);
+  text-transform:uppercase;letter-spacing:0.5px;
+  background:rgba(184,150,46,0.03);border-bottom:1px solid var(--border);
+  white-space:nowrap;
+}
+tbody td{padding:10px 14px;font-size:12px;border-bottom:1px solid rgba(184,150,46,0.04);white-space:nowrap;}
+tbody tr:last-child td{border:none;}
+tbody tr:hover td{background:rgba(184,150,46,0.03);}
+.badge{padding:3px 8px;border-radius:100px;font-size:10px;font-weight:700;display:inline-block;}
+.badge-success{background:rgba(63,207,113,0.15);color:var(--green);}
+.badge-held{background:rgba(255,193,7,0.15);color:#ffc107;}
+.badge-reversed,.badge-rejected,.badge-failed{background:rgba(255,85,85,0.12);color:var(--red);}
+.badge-pending{background:rgba(255,193,7,0.12);color:#ffc107;}
+.badge-resolved,.badge-completed,.badge-active{background:rgba(63,207,113,0.12);color:var(--green);}
+.badge-locked{background:rgba(255,85,85,0.15);color:var(--red);}
+.flag-tag{display:inline-block;padding:2px 6px;border-radius:100px;background:rgba(255,85,85,0.15);border:1px solid rgba(255,85,85,0.3);color:var(--red);font-size:9px;margin-left:4px;}
+.fraud-bar{display:flex;align-items:center;gap:6px;}
+.fbar-track{flex:1;height:4px;border-radius:2px;background:rgba(184,150,46,0.08);}
+.fbar-fill{height:100%;border-radius:2px;}
+
+/* ── ACTION BUTTONS ── */
+.act{
+  padding:4px 9px;border-radius:6px;border:1px solid;
+  font-size:10px;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:all 0.15s;
+  white-space:nowrap;
+}
+.act-green{border-color:rgba(63,207,113,0.4);background:rgba(63,207,113,0.08);color:var(--green);}
+.act-red{border-color:rgba(255,85,85,0.4);background:rgba(255,85,85,0.08);color:var(--red);}
+.act-blue{border-color:rgba(74,158,255,0.4);background:rgba(74,158,255,0.08);color:var(--blue);}
+.act-gold{border-color:rgba(200,168,75,0.4);background:rgba(200,168,75,0.08);color:var(--gold);}
+.act-orange{border-color:rgba(255,159,67,0.4);background:rgba(255,159,67,0.08);color:var(--orange);}
+
+/* ── CUSTOMER DETAIL DRAWER ── */
+.drawer-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);
+  z-index:200;display:none;
+}
+.drawer-overlay.open{display:flex;justify-content:flex-end;}
+.drawer{
+  width:480px;max-width:95vw;
+  background:var(--surface);border-left:1px solid var(--border);
+  height:100%;overflow-y:auto;
+  animation:drawerSlide 0.25s ease;
+}
+@keyframes drawerSlide{from{transform:translateX(100%);}to{transform:translateX(0);}}
+.drawer-header{
+  padding:20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--surface);z-index:1;
+}
+.drawer-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;}
+.btn-close{
+  width:28px;height:28px;border-radius:8px;
+  background:rgba(184,150,46,0.06);border:none;
+  color:#fff;font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.drawer-body{padding:20px;}
+.drawer-section{margin-bottom:22px;}
+.drawer-section-title{
+  font-size:10px;color:var(--dim);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:12px;padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.info-item{}
+.info-label{font-size:10px;color:var(--dim);text-transform:uppercase;margin-bottom:3px;}
+.info-val{font-size:13px;font-weight:500;color:#fff;}
+.balance-big{
+  font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
+  color:var(--gold);margin-bottom:4px;
+}
+.balance-sub{font-size:11px;color:var(--dim);}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.drawer-btn{
+  padding:8px 14px;border-radius:9px;font-size:12px;font-weight:600;
+  cursor:pointer;border:1px solid;font-family:'DM Sans',sans-serif;transition:all 0.15s;
+}
+.drawer-btn:hover{opacity:0.85;}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(90,74,42,0.3);backdrop-filter:blur(4px);
+  z-index:300;display:none;align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:28px;width:400px;max-width:92vw;
+  position:relative;animation:modalIn 0.2s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:3px;}
+.modal-sub{font-size:12px;color:var(--dim);margin-bottom:20px;}
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:10px;color:var(--dim);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;}
+.form-input{
+  width:100%;padding:10px 12px;background:rgba(184,150,46,0.06);
+  border:1px solid rgba(255,255,255,0.1);border-radius:9px;
+  color:#1a1a1a;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;
+}
+.form-input::placeholder{color:#999;}
+.form-input:focus{border-color:var(--gold);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+select.form-input option{background:var(--card);}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
+.m-btn{
+  padding:10px;border-radius:9px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;
+}
+.m-btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink);}
+.m-btn-cancel{background:#f0f0f0;border:1px solid #d0d0d0;color:#1a1a1a;font-weight:700;}
+.m-btn-cancel:hover{background:#e2e2e2;}
+.error-box{
+  background:rgba(255,85,85,0.1);border:1px solid rgba(255,85,85,0.3);
+  border-radius:8px;padding:9px 12px;color:var(--red);font-size:12px;
+  margin-bottom:12px;display:none;
+}
+.success-box{
+  background:rgba(63,207,113,0.1);border:1px solid rgba(63,207,113,0.3);
+  border-radius:8px;padding:9px 12px;color:var(--green);font-size:12px;
+  margin-bottom:12px;display:none;
+}
+.modal-close{
+  position:absolute;top:14px;right:14px;
+  width:26px;height:26px;border-radius:7px;
+  background:rgba(184,150,46,0.06);border:none;
+  color:#fff;cursor:pointer;font-size:13px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ── CHARTS ── */
+.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.chart-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:14px;}
+
+/* ── CHAT LOG COLORS ── */
+.intent-badge{
+  padding:2px 7px;border-radius:100px;font-size:9px;font-weight:700;
+  background:rgba(74,158,255,0.15);color:var(--blue);
+}
+
+/* ── PAGINATION ── */
+.pagination{display:flex;gap:6px;padding:12px 16px;justify-content:center;}
+.page-btn{
+  padding:5px 11px;border-radius:7px;border:1px solid var(--border);
+  background:rgba(184,150,46,0.04);color:#fff;font-size:11px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:all 0.15s;
+}
+.page-btn.active,.page-btn:hover{background:var(--gold);color:var(--ink);border-color:var(--gold);}
+
+/* ── MISC ── */
+.empty{text-align:center;padding:32px;color:var(--dim);}
+.empty-icon{font-size:36px;margin-bottom:8px;}
+.chip{
+  display:inline-block;padding:2px 8px;border-radius:100px;
+  font-size:10px;background:rgba(255,255,255,0.07);color:var(--dim);margin:1px;
+}
+.highlight{color:var(--gold);font-weight:600;}
+.mono{font-family:monospace;font-size:11px;}
+
+/* ── GLOBAL LANG SWITCHER ── */
+.topbar-lang {
+  display:flex;align-items:center;gap:6px;
+}
+.lang-switch-btn {
+  padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;
+  border:1.5px solid var(--border);background:none;color:var(--dim);
+  cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;
+}
+.lang-switch-btn:hover { border-color:var(--gold);color:#2a1f0a; }
+.lang-switch-btn.active {
+  background:var(--gold);border-color:var(--gold);color:var(--ink);
+}
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-logo">Smart<span>Bank</span><br><span class="sb-badge" data-i18n="admin_badge">ADMIN</span></div>
+  <div class="sb-user">
+    <div class="sb-avatar">A</div>
+    <div class="sb-name">Administrator</div>
+    <div class="sb-role" data-i18n="full_access">Full Access</div>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-section" data-i18n="overview_section">Overview</div>
+    <button class="nav-btn active" onclick="nav('overview')"><span class="nav-icon">📊</span><span data-i18n="dashboard"> Dashboard</span></button>
+    <button class="nav-btn" onclick="nav('analytics')"><span class="nav-icon">📈</span><span data-i18n="an_analytics"> Analytics</span></button>
+
+    <div class="nav-section" data-i18n="customers_section">Customers</div>
+    <button class="nav-btn" onclick="nav('customers')"><span class="nav-icon">👥</span><span data-i18n="all_customers"> All Customers</span></button>
+    <button class="nav-btn" onclick="openCreateUser()"><span class="nav-icon">➕</span><span data-i18n="add_customer"> Add Customer</span></button>
+
+    <div class="nav-section" data-i18n="operations_section">Operations</div>
+    <button class="nav-btn" onclick="nav('transactions')"><span class="nav-icon">💳</span><span data-i18n="an_transactions"> Transactions</span></button>
+    <button class="nav-btn" onclick="nav('flagged')"><span class="nav-icon">🚨</span><span data-i18n="flagged">Flagged</span> <span class="sb-badge-count" id="flagCount">0</span></button>
+    <button class="nav-btn" onclick="nav('banker')"><span class="nav-icon">📞</span><span data-i18n="banker_requests">Banker Requests</span> <span class="sb-badge-count" id="bankerCount">0</span></button>
+
+    <div class="nav-section" data-i18n="monitoring_section">Monitoring</div>
+    <button class="nav-btn" onclick="nav('chatlogs')"><span class="nav-icon">🤖</span><span data-i18n="chat_logs"> Chat Logs</span></button>
+    <button class="nav-btn" onclick="nav('scheduled')"><span class="nav-icon">📅</span><span data-i18n="an_scheduled"> Scheduled</span></button>
+  </div>
+  <div class="sb-footer">
+    <button class="btn-logout" onclick="logout()"><span data-i18n="sign_out">🚪 Sign Out</span></button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">Dashboard Overview</div>
+    <div class="topbar-right">
+
+
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="section active" id="sec-overview">
+      <div class="stat-grid" id="statGrid"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="tbl-card">
+          <div class="tbl-head"><div class="tbl-title">🕐 Newest Customers</div></div>
+          <table><thead><tr><th>Account</th><th>Name</th><th>Balance</th><th>Joined</th><th></th></tr></thead>
+          <tbody id="newCustomersBody"></tbody></table>
+        </div>
+        <div class="tbl-card">
+          <div class="tbl-head"><div class="tbl-title">🚨 Pending Flags</div></div>
+          <table><thead><tr><th>Txn</th><th>From</th><th>Amount</th><th>Score</th><th>Action</th></tr></thead>
+          <tbody id="flaggedPreviewBody"></tbody></table>
+        </div>
+      </div>
+      <div class="tbl-card">
+        <div class="tbl-head"><div class="tbl-title">📞 Open Banker Requests</div></div>
+        <table><thead><tr><th>ID</th><th>Customer</th><th>Account</th><th>Reason</th><th>Time</th><th>Action</th></tr></thead>
+        <tbody id="bankerPreviewBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ── ANALYTICS ── -->
+    <div class="section" id="sec-analytics">
+      <div class="stat-grid" id="analyticsStatGrid"></div>
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">📈 Daily Transaction Volume (Last 30 Days)</div>
+          <canvas id="dailyChart" height="180"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🍩 Transaction Types</div>
+          <canvas id="typeChart" height="180"></canvas>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">💰 Top 10 Customers by Balance</div>
+          <canvas id="balanceChart" height="180"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🤖 NLP Intent Distribution</div>
+          <canvas id="intentChart" height="180"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CUSTOMERS ── -->
+    <div class="section" id="sec-customers">
+      <div class="tbl-card">
+        <div class="tbl-head">
+          <div class="tbl-title">👥 All Customers <span id="custTotal" style="color:var(--dim);font-size:11px;font-weight:400;margin-left:6px;"></span></div>
+          <div class="tbl-actions">
+            <input class="search-box" id="custSearch" placeholder="🔍 Search name / account / email..." oninput="filterCustomers()">
+            <button class="act act-gold" onclick="openCreateUser()">➕ Add New</button>
+            <button class="act act-blue" onclick="exportCSV()">⬇ Export CSV</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Account</th><th>Name</th><th>Email</th><th>Phone</th>
+              <th>Balance</th><th>Type</th><th>Status</th>
+              <th>Joined</th><th>Last Login</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="custBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="custPagination"></div>
+      </div>
+    </div>
+
+    <!-- ── TRANSACTIONS ── -->
+    <div class="section" id="sec-transactions">
+      <div class="tbl-card">
+        <div class="tbl-head">
+          <div class="tbl-title">💳 All Transactions <span id="txnTotal" style="color:var(--dim);font-size:11px;font-weight:400;margin-left:6px;"></span></div>
+          <div class="tbl-actions">
+            <input class="search-box" id="txnSearch" placeholder="🔍 Txn ID / Account..." oninput="filterTxns()">
+            <select class="search-box" id="txnFilter" style="width:130px;" onchange="filterTxns()">
+              <option value="">All Types</option>
+              <option value="transfer">Transfer</option>
+              <option value="deposit">Deposit</option>
+              <option value="withdrawal">Withdrawal</option>
+              <option value="scheduled">Scheduled</option>
+            </select>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Txn ID</th><th>From</th><th>To</th><th>Type</th><th>Amount</th>
+              <th>Status</th><th>Fraud Score</th><th>Date</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="txnBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="txnPagination"></div>
+      </div>
+    </div>
+
+    <!-- ── FLAGGED ── -->
+    <div class="section" id="sec-flagged">
+      <div class="tbl-card">
+        <div class="tbl-head"><div class="tbl-title">🚨 Flagged / Suspicious Transactions</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Txn ID</th><th>From</th><th>To</th><th>Amount</th>
+              <th>Fraud Score</th><th>Reason</th><th>Status</th><th>Date</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="flaggedBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BANKER REQUESTS ── -->
+    <div class="section" id="sec-banker">
+      <div class="tbl-card">
+        <div class="tbl-head">
+          <div class="tbl-title">📞 All Banker Requests</div>
+          <select class="search-box" id="bankerFilter" style="width:140px;" onchange="renderBanker()">
+            <option value="">All</option>
+            <option value="pending">Pending</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>ID</th><th>Customer</th><th>Account</th><th>Reason</th>
+              <th>Status</th><th>Note</th><th>Created</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="bankerBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CHAT LOGS ── -->
+    <div class="section" id="sec-chatlogs">
+      <div class="tbl-card">
+        <div class="tbl-head">
+          <div class="tbl-title">🤖 AI Chat Logs</div>
+          <input class="search-box" id="chatSearch" placeholder="🔍 Search message / account..." oninput="filterChat()">
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Account</th><th>Customer</th><th>Message</th>
+              <th>Intent</th><th>Lang</th><th>Time</th>
+            </tr></thead>
+            <tbody id="chatBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCHEDULED ── -->
+    <div class="section" id="sec-scheduled">
+      <div class="tbl-card">
+        <div class="tbl-head"><div class="tbl-title">📅 Scheduled Transfers</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>ID</th><th>From</th><th>To</th><th>Amount</th>
+              <th>Scheduled At</th><th>Status</th><th>Created</th>
+            </tr></thead>
+            <tbody id="scheduledBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ── CUSTOMER DETAIL DRAWER ── -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
+  <div class="drawer" id="drawerPanel">
+    <div class="drawer-header">
+      <div class="drawer-title" id="drawerTitle">Customer Details</div>
+      <button class="btn-close" onclick="closeDrawerDirect()">✕</button>
+    </div>
+    <div class="drawer-body" id="drawerBody">Loading...</div>
+  </div>
+</div>
+
+<!-- ── CREATE / EDIT USER MODAL ── -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('userModal')">✕</button>
+    <div class="modal-title" id="userModalTitle">Add New Customer</div>
+    <div class="modal-sub" id="userModalSub">Create a new customer account</div>
+    <div class="error-box" id="userError"></div>
+    <div class="success-box" id="userSuccess"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input class="form-input" id="uName" placeholder="Customer full name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input class="form-input" id="uPhone" placeholder="Mobile number">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email Address *</label>
+      <input class="form-input" id="uEmail" type="email" placeholder="email@example.com">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Password *</label>
+        <input class="form-input" id="uPassword" type="password" placeholder="Min 6 chars">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Account Type</label>
+        <select class="form-input" id="uType">
+          <option value="savings">Savings</option>
+          <option value="current">Current</option>
+          <option value="salary">Salary</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Initial Balance (₹)</label>
+      <input class="form-input" id="uBalance" type="number" value="1000" placeholder="0">
+    </div>
+    <div class="modal-btns">
+      <button class="m-btn m-btn-cancel" onclick="closeModal('userModal')">Cancel</button>
+      <button class="m-btn m-btn-primary" onclick="createUser()" id="createUserBtn">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADJUST BALANCE MODAL ── -->
+<div class="modal-overlay" id="balModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('balModal')">✕</button>
+    <div class="modal-title">💰 Adjust Balance</div>
+    <div class="modal-sub" id="balModalSub">Credit or debit customer account</div>
+    <div class="error-box" id="balError"></div>
+    <div class="form-group">
+      <label class="form-label">Amount (₹)</label>
+      <input class="form-input" id="balAmount" type="number" placeholder="Enter amount">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Action</label>
+      <select class="form-input" id="balAction">
+        <option value="credit">Credit (Add Money)</option>
+        <option value="debit">Debit (Remove Money)</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="m-btn m-btn-cancel" onclick="closeModal('balModal')">Cancel</button>
+      <button class="m-btn m-btn-primary" onclick="doAdjustBalance()">Apply →</button>
+    </div>
+    <input type="hidden" id="balAcc">
+  </div>
+</div>
+
+<!-- ── RESET PW MODAL ── -->
+<div class="modal-overlay" id="pwModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('pwModal')">✕</button>
+    <div class="modal-title">🔑 Reset Password</div>
+    <div class="modal-sub" id="pwModalSub">Set a new password for this customer</div>
+    <div class="form-group">
+      <label class="form-label">New Password</label>
+      <input class="form-input" id="pwNew" type="text" placeholder="Enter new password" value="Pass@123">
+    </div>
+    <div class="modal-btns">
+      <button class="m-btn m-btn-cancel" onclick="closeModal('pwModal')">Cancel</button>
+      <button class="m-btn m-btn-primary" onclick="doResetPw()">Reset Password →</button>
+    </div>
+    <input type="hidden" id="pwAcc">
+  </div>
+</div>
+
+<!-- ── BANKER NOTE MODAL ── -->
+<div class="modal-overlay" id="bankerModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('bankerModal')">✕</button>
+    <div class="modal-title">📞 Resolve Banker Request</div>
+    <div class="modal-sub" id="bankerModalSub">Add resolution note</div>
+    <div class="form-group">
+      <label class="form-label">Resolution Note</label>
+      <textarea class="form-input" id="bankerNote" rows="3" placeholder="Describe what was done..."></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="m-btn m-btn-cancel" onclick="closeModal('bankerModal')">Cancel</button>
+      <button class="m-btn m-btn-primary" onclick="doBankerResolve()">Resolve →</button>
+    </div>
+    <input type="hidden" id="bankerReqId">
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let D = {}; // All loaded data
+let charts = {};
+let custPage = 1, txnPage = 1;
+const PER_PAGE = 20;
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+window.onload = () => loadAll();
+
+async function loadAll() {
+  try {
+    const r = await fetch('/api/admin/stats');
+    if (r.status === 401 || r.status === 403) { window.location.href='/login'; return; }
+    D = await r.json();
+    renderAll();
+    document.getElementById('flagCount').textContent = D.recent_transactions?.filter(t=>t.is_flagged&&t.status==='held').length || 0;
+    document.getElementById('bankerCount').textContent = D.banker_requests?.filter(r=>r.status==='pending').length || 0;
+  } catch(e) { showToast('Failed to load data: '+e.message,'error'); }
+}
+
+function renderAll() {
+  renderStats();
+  renderNewCustomers();
+  renderFlaggedPreview();
+  renderBankerPreview();
+  renderCustomers();
+  renderTransactions();
+  renderFlagged();
+  renderBanker();
+  renderChatLogs();
+  renderScheduled();
+  renderAnalytics();
+}
+
+// ═══════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════
+function renderStats() {
+  const s = D.stats || {};
+  document.getElementById('statGrid').innerHTML = `
+    <div class="stat-card c-gold"><div class="stat-icon">👥</div><div class="stat-label">Total Customers</div><div class="stat-value">${s.total_users||0}</div><div class="stat-sub">${s.new_today||0} joined today</div></div>
+    <div class="stat-card c-green"><div class="stat-icon">💰</div><div class="stat-label">Total Balance</div><div class="stat-value">₹${fmtNum(s.total_balance||0)}</div><div class="stat-sub">Across all accounts</div></div>
+    <div class="stat-card c-blue"><div class="stat-icon">💳</div><div class="stat-label">Transactions</div><div class="stat-value">${s.total_transactions||0}</div><div class="stat-sub">All time</div></div>
+    <div class="stat-card c-red"><div class="stat-icon">🚨</div><div class="stat-label">Flagged</div><div class="stat-value">${s.flagged_transactions||0}</div><div class="stat-sub">Needs review</div></div>
+    <div class="stat-card c-orange"><div class="stat-icon">🔒</div><div class="stat-label">Locked Accounts</div><div class="stat-value">${s.locked_accounts||0}</div><div class="stat-sub">Restricted access</div></div>
+    <div class="stat-card c-purple"><div class="stat-icon">📞</div><div class="stat-label">Banker Pending</div><div class="stat-value">${s.pending_banker||0}</div><div class="stat-sub">Awaiting response</div></div>
+  `;
+}
+
+// ═══════════════════════════════════════
+// DASHBOARD PREVIEWS
+// ═══════════════════════════════════════
+function renderNewCustomers() {
+  const users = (D.users||[]).slice(0,6);
+  if(!users.length){ document.getElementById('newCustomersBody').innerHTML='<tr><td colspan="5" class="empty"><div class="empty-icon">👤</div>No customers yet</td></tr>'; return; }
+  document.getElementById('newCustomersBody').innerHTML = users.map(u=>`<tr>
+    <td class="mono highlight">${u.account_number}</td>
+    <td><strong>${u.name}</strong></td>
+    <td style="color:var(--gold);">₹${fmtNum(u.balance)}</td>
+    <td style="color:var(--dim);font-size:11px;">${fmt(u.created_at)}</td>
+    <td><button class="act act-blue" onclick="openCustomerDrawer('${u.account_number}')">View</button></td>
+  </tr>`).join('');
+}
+
+function renderFlaggedPreview() {
+  const flagged = (D.recent_transactions||[]).filter(t=>t.is_flagged&&t.status==='held').slice(0,5);
+  if(!flagged.length){ document.getElementById('flaggedPreviewBody').innerHTML='<tr><td colspan="5" class="empty">✅ No flagged transactions</td></tr>'; return; }
+  document.getElementById('flaggedPreviewBody').innerHTML = flagged.map(t=>`<tr>
+    <td class="mono" style="font-size:10px;">${t.txn_id}</td>
+    <td>${t.from_account}</td>
+    <td style="color:var(--gold);">₹${fmtNum(t.amount)}</td>
+    <td><div class="fraud-bar"><div class="fbar-track"><div class="fbar-fill" style="width:${t.fraud_score*100}%;background:${t.fraud_score>0.7?'var(--red)':'var(--orange)'}"></div></div><span style="font-size:10px;color:${t.fraud_score>0.7?'var(--red)':'var(--orange)'};">${(t.fraud_score*100).toFixed(0)}%</span></div></td>
+    <td>
+      <button class="act act-green" onclick="flagAction(${t.id},'approve')">✓</button>
+      <button class="act act-red" onclick="flagAction(${t.id},'reject')">✗</button>
+    </td>
+  </tr>`).join('');
+}
+
+function renderBankerPreview() {
+  const pending = (D.banker_requests||[]).filter(r=>r.status==='pending').slice(0,5);
+  if(!pending.length){ document.getElementById('bankerPreviewBody').innerHTML='<tr><td colspan="6" class="empty">✅ No open requests</td></tr>'; return; }
+  document.getElementById('bankerPreviewBody').innerHTML = pending.map(r=>`<tr>
+    <td>#${r.id}</td>
+    <td><strong>${r.customer_name||'—'}</strong></td>
+    <td class="mono">${r.account_number}</td>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;font-size:11px;">${r.reason||'—'}</td>
+    <td style="font-size:10px;color:var(--dim);">${fmt(r.created_at)}</td>
+    <td><button class="act act-blue" onclick="openBankerResolve(${r.id})">Resolve</button></td>
+  </tr>`).join('');
+}
+
+// ═══════════════════════════════════════
+// CUSTOMERS TABLE
+// ═══════════════════════════════════════
+let filteredCusts = [];
+function renderCustomers() {
+  const q = (document.getElementById('custSearch')?.value||'').toLowerCase();
+  filteredCusts = (D.users||[]).filter(u=>
+    !q || u.name.toLowerCase().includes(q) ||
+    u.account_number.toLowerCase().includes(q) ||
+    (u.email||'').toLowerCase().includes(q) ||
+    (u.phone||'').includes(q)
+  );
+  document.getElementById('custTotal').textContent = `(${filteredCusts.length} customers)`;
+  const page = filteredCusts.slice((custPage-1)*PER_PAGE, custPage*PER_PAGE);
+  document.getElementById('custBody').innerHTML = page.map(u=>`<tr>
+    <td class="mono highlight">${u.account_number}</td>
+    <td><strong>${u.name}</strong></td>
+    <td style="font-size:11px;color:var(--dim);">${u.email||'—'}</td>
+    <td style="font-size:11px;">${u.phone||'—'}</td>
+    <td style="color:var(--gold);font-weight:600;">₹${fmtNum(u.balance)}</td>
+    <td><span class="chip">${u.account_type||'savings'}</span></td>
+    <td><span class="badge ${u.is_locked?'badge-locked':'badge-active'}">${u.is_locked?'🔒 Locked':'✅ Active'}</span></td>
+    <td style="font-size:10px;color:var(--dim);">${fmt(u.created_at)}</td>
+    <td style="font-size:10px;color:var(--dim);">${u.last_login?fmt(u.last_login):'Never'}</td>
+    <td>
+      <button class="act act-blue" onclick="openCustomerDrawer('${u.account_number}')">👁 View</button>
+      <button class="act ${u.is_locked?'act-green':'act-red'}" onclick="toggleLock('${u.account_number}',${u.is_locked})">${u.is_locked?'Unlock':'Lock'}</button>
+      <button class="act act-gold" onclick="openAdjustBalance('${u.account_number}','${u.name}')">₹ Balance</button>
+      <button class="act act-orange" onclick="openResetPw('${u.account_number}','${u.name}')">🔑 PW</button>
+      <button class="act act-red" onclick="confirmDeleteCustomer('${u.account_number}','${u.name}')">🗑 Delete</button>
+    </td>
+  </tr>`).join('') || '<tr><td colspan="10" class="empty"><div class="empty-icon">👤</div>No customers found</td></tr>';
+  renderPagination('custPagination', filteredCusts.length, custPage, p=>{custPage=p;renderCustomers();});
+}
+
+function filterCustomers(){ custPage=1; renderCustomers(); }
+
+// ── DELETE CUSTOMER ──────────────────────────────────────────────────────
+let _deleteAcc = null;
+
+function confirmDeleteCustomer(acc, name) {
+  _deleteAcc = acc;
+  document.getElementById('delCustomerName').textContent = name;
+  document.getElementById('delCustomerAcc').textContent  = acc;
+  document.getElementById('deleteModal').style.display   = 'flex';
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').style.display = 'none';
+  _deleteAcc = null;
+}
+
+async function executeDelete() {
+  if (!_deleteAcc) return;
+  const btn = document.getElementById('deleteConfirmBtn');
+  btn.textContent = 'Deleting...'; btn.disabled = true;
+  try {
+    const r = await fetch(`/api/admin/user/${_deleteAcc}/delete`, { method: 'DELETE' });
+    const d = await r.json();
+    if (d.success) {
+      showToast(`✅ Account ${_deleteAcc} deleted successfully.`);
+      closeDeleteModal();
+      await loadAll();  // refresh all data
+    } else {
+      showToast('❌ ' + (d.error || 'Delete failed.'), 'error');
+    }
+  } catch { showToast('❌ Network error.', 'error'); }
+  finally { btn.textContent = 'Yes, Delete Permanently'; btn.disabled = false; }
+}
+
+// ═══════════════════════════════════════
+// TRANSACTIONS TABLE
+// ═══════════════════════════════════════
+let filteredTxns = [];
+function renderTransactions() {
+  const q = (document.getElementById('txnSearch')?.value||'').toUpperCase();
+  const tf = (document.getElementById('txnFilter')?.value||'');
+  filteredTxns = (D.recent_transactions||[]).filter(t=>
+    (!q || t.txn_id.includes(q) || t.from_account.includes(q) || t.to_account.includes(q)) &&
+    (!tf || t.txn_type===tf)
+  );
+  document.getElementById('txnTotal').textContent = `(${filteredTxns.length} transactions)`;
+  const page = filteredTxns.slice((txnPage-1)*PER_PAGE, txnPage*PER_PAGE);
+  document.getElementById('txnBody').innerHTML = page.map(t=>{
+    const score = parseFloat(t.fraud_score||0);
+    const scoreColor = score>0.7?'var(--red)':score>0.4?'var(--orange)':'var(--dim)';
+    return `<tr>
+      <td class="mono">${t.txn_id}<br><span style="font-size:9px;color:var(--dim);">${t.sender_name||''}</span></td>
+      <td class="mono" style="font-size:11px;">${t.from_account}</td>
+      <td class="mono" style="font-size:11px;">${t.to_account}</td>
+      <td><span class="chip">${t.txn_type}</span></td>
+      <td style="color:var(--gold);font-weight:600;">₹${fmtNum(t.amount)}</td>
+      <td><span class="badge badge-${t.status}">${t.status}</span>${t.is_flagged?'<span class="flag-tag">⚠️ FLAGGED</span>':''}</td>
+      <td><div class="fraud-bar"><div class="fbar-track"><div class="fbar-fill" style="width:${score*100}%;background:${scoreColor}"></div></div><span style="font-size:10px;color:${scoreColor};">${(score*100).toFixed(0)}%</span></div></td>
+      <td style="font-size:10px;color:var(--dim);">${fmt(t.created_at)}</td>
+      <td>
+        ${t.status==='held'?`<button class="act act-green" onclick="flagAction(${t.id},'approve')">✓ OK</button> <button class="act act-red" onclick="flagAction(${t.id},'reject')">✗</button>`:''}
+        ${!t.is_flagged&&t.status==='success'?`<button class="act act-orange" onclick="flagAction(${t.id},'flag')">🚩</button>`:''}
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="9" class="empty"><div class="empty-icon">💳</div>No transactions found</td></tr>';
+  renderPagination('txnPagination', filteredTxns.length, txnPage, p=>{txnPage=p;renderTransactions();});
+}
+
+function filterTxns(){ txnPage=1; renderTransactions(); }
+
+// ═══════════════════════════════════════
+// FLAGGED
+// ═══════════════════════════════════════
+function renderFlagged() {
+  const flagged = (D.recent_transactions||[]).filter(t=>t.is_flagged);
+  document.getElementById('flaggedBody').innerHTML = flagged.map(t=>{
+    const score = parseFloat(t.fraud_score||0);
+    return `<tr>
+      <td class="mono" style="font-size:10px;">${t.txn_id}</td>
+      <td class="mono">${t.from_account}</td>
+      <td class="mono">${t.to_account}</td>
+      <td style="color:var(--gold);font-weight:600;">₹${fmtNum(t.amount)}</td>
+      <td><div class="fraud-bar"><div class="fbar-track"><div class="fbar-fill" style="width:${score*100}%;background:${score>0.7?'var(--red)':'var(--orange)'}"></div></div><span style="font-size:10px;color:${score>0.7?'var(--red)':'var(--orange)'};">${(score*100).toFixed(0)}%</span></div></td>
+      <td style="font-size:10px;color:var(--dim);max-width:150px;overflow:hidden;text-overflow:ellipsis;">${t.flag_reason||'—'}</td>
+      <td><span class="badge badge-${t.status}">${t.status}</span></td>
+      <td style="font-size:10px;color:var(--dim);">${fmt(t.created_at)}</td>
+      <td>
+        ${t.status==='held'?`<button class="act act-green" onclick="flagAction(${t.id},'approve')">✓ Approve</button> <button class="act act-red" onclick="flagAction(${t.id},'reject')">✗ Reject</button>`:''}
+        ${t.status==='success'?`<button class="act act-orange" onclick="flagAction(${t.id},'flag')">🚩 Flag</button>`:''}
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="9" class="empty"><div class="empty-icon">✅</div>No flagged transactions</td></tr>';
+}
+
+// ═══════════════════════════════════════
+// BANKER REQUESTS
+// ═══════════════════════════════════════
+function renderBanker() {
+  const filter = document.getElementById('bankerFilter')?.value || '';
+  const reqs = (D.banker_requests||[]).filter(r=>!filter||r.status===filter);
+  document.getElementById('bankerBody').innerHTML = reqs.map(r=>`<tr>
+    <td>#${r.id}</td>
+    <td><strong>${r.customer_name||'—'}</strong></td>
+    <td class="mono">${r.account_number}</td>
+    <td style="font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;">${r.reason||'—'}</td>
+    <td><span class="badge badge-${r.status}">${r.status}</span></td>
+    <td style="font-size:11px;color:var(--dim);">${r.banker_note||'—'}</td>
+    <td style="font-size:10px;color:var(--dim);">${fmt(r.created_at)}</td>
+    <td>${r.status==='pending'?`<button class="act act-blue" onclick="openBankerResolve(${r.id})">Resolve</button>`:'<span style="color:var(--dim);font-size:11px;">Done</span>'}</td>
+  </tr>`).join('') || '<tr><td colspan="8" class="empty"><div class="empty-icon">📞</div>No requests</td></tr>';
+}
+
+// ═══════════════════════════════════════
+// CHAT LOGS
+// ═══════════════════════════════════════
+function renderChatLogs() {
+  const q = (document.getElementById('chatSearch')?.value||'').toLowerCase();
+  const logs = (D.chat_logs||[]).filter(c=>
+    !q || (c.message||'').toLowerCase().includes(q) || c.account_number.includes(q)
+  );
+  const langEmoji = {en:'🇬🇧', ta:'🇮🇳', hi:'🇮🇳'};
+  document.getElementById('chatBody').innerHTML = logs.map(c=>`<tr>
+    <td class="mono">${c.account_number}</td>
+    <td style="font-size:11px;">${c.customer_name||'—'}</td>
+    <td style="font-size:12px;max-width:240px;overflow:hidden;text-overflow:ellipsis;">${c.message||''}</td>
+    <td><span class="intent-badge">${c.intent||'—'}</span></td>
+    <td>${langEmoji[c.language]||'🌐'} ${c.language||'—'}</td>
+    <td style="font-size:10px;color:var(--dim);">${fmt(c.created_at)}</td>
+  </tr>`).join('') || '<tr><td colspan="6" class="empty"><div class="empty-icon">💬</div>No chat logs</td></tr>';
+}
+function filterChat(){ renderChatLogs(); }
+
+// ═══════════════════════════════════════
+// SCHEDULED
+// ═══════════════════════════════════════
+function renderScheduled() {
+  // fetch separately since not in stats
+  fetch('/api/admin/scheduled').then(r=>r.json()).then(d=>{
+    document.getElementById('scheduledBody').innerHTML = (d||[]).map(s=>`<tr>
+      <td>#${s.id}</td>
+      <td class="mono">${s.from_account}</td>
+      <td class="mono">${s.to_account}</td>
+      <td style="color:var(--gold);">₹${fmtNum(s.amount)}</td>
+      <td style="font-size:11px;">${s.scheduled_at}</td>
+      <td><span class="badge badge-${s.status}">${s.status}</span></td>
+      <td style="font-size:10px;color:var(--dim);">${fmt(s.created_at)}</td>
+    </tr>`).join('') || '<tr><td colspan="7" class="empty"><div class="empty-icon">📅</div>No scheduled transfers</td></tr>';
+  }).catch(()=>{});
+}
+
+// ═══════════════════════════════════════
+// ANALYTICS CHARTS
+// ═══════════════════════════════════════
+function renderAnalytics() {
+  const txns = D.recent_transactions || [];
+  const users = D.users || [];
+  const stats = D.stats || {};
+
+  document.getElementById('analyticsStatGrid').innerHTML = `
+    <div class="stat-card c-gold"><div class="stat-icon">💳</div><div class="stat-label">Total Volume</div><div class="stat-value">₹${fmtNum(txns.reduce((s,t)=>s+parseFloat(t.amount||0),0).toFixed(0))}</div></div>
+    <div class="stat-card c-blue"><div class="stat-icon">📊</div><div class="stat-label">Avg Transaction</div><div class="stat-value">₹${fmtNum(txns.length?(txns.reduce((s,t)=>s+parseFloat(t.amount||0),0)/txns.length).toFixed(0):0)}</div></div>
+    <div class="stat-card c-green"><div class="stat-icon">👥</div><div class="stat-label">Total Customers</div><div class="stat-value">${stats.total_users||0}</div></div>
+    <div class="stat-card c-red"><div class="stat-icon">⚠️</div><div class="stat-label">Fraud Rate</div><div class="stat-value">${txns.length?((txns.filter(t=>t.is_flagged).length/txns.length)*100).toFixed(1):0}%</div></div>
+  `;
+
+  // Daily volume chart
+  const dailyMap = {};
+  txns.forEach(t=>{
+    const d = (t.created_at||'').substring(0,10);
+    dailyMap[d] = (dailyMap[d]||0) + parseFloat(t.amount||0);
+  });
+  const dailyDates = Object.keys(dailyMap).sort().slice(-30);
+  renderChart('dailyChart','bar',dailyDates,
+    [{label:'Volume (₹)',data:dailyDates.map(d=>dailyMap[d].toFixed(0)),backgroundColor:'rgba(200,168,75,0.6)',borderColor:'var(--gold)',borderWidth:1,borderRadius:4}]);
+
+  // Type donut
+  const typeMap = {};
+  txns.forEach(t=>{ typeMap[t.txn_type]=(typeMap[t.txn_type]||0)+1; });
+  const typeColors=['#c8a84b','#4a9eff','#3fcf71','#f55','#a855f7','#ff9f43'];
+  renderChart('typeChart','doughnut',Object.keys(typeMap),
+    [{data:Object.values(typeMap),backgroundColor:typeColors,borderWidth:0,hoverOffset:6}]);
+
+  // Balance bar - top 10 users
+  const top10 = [...users].sort((a,b)=>b.balance-a.balance).slice(0,10);
+  renderChart('balanceChart','bar',top10.map(u=>u.name.split(' ')[0]),
+    [{label:'Balance (₹)',data:top10.map(u=>u.balance.toFixed(0)),backgroundColor:'rgba(63,207,113,0.6)',borderColor:'var(--green)',borderWidth:1,borderRadius:4}]);
+
+  // Intent distribution
+  const intentMap = {};
+  (D.chat_logs||[]).forEach(c=>{ if(c.intent) intentMap[c.intent]=(intentMap[c.intent]||0)+1; });
+  const intentColors=['#4a9eff','#c8a84b','#3fcf71','#f55','#a855f7','#ff9f43','#00d2d3','#ff6348'];
+  renderChart('intentChart','doughnut',Object.keys(intentMap),
+    [{data:Object.values(intentMap),backgroundColor:intentColors,borderWidth:0,hoverOffset:6}]);
+}
+
+function renderChart(id, type, labels, datasets) {
+  if(charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id)?.getContext('2d');
+  if(!ctx) return;
+  charts[id] = new Chart(ctx, {
+    type, data:{labels,datasets},
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{
+          position: type==='doughnut'?'bottom':'top',
+          labels:{color:'#777',font:{family:'DM Sans'},boxWidth:10,padding:10}
+        }
+      },
+      scales: type==='bar'?{
+        x:{ticks:{color:'#555',font:{size:10}},grid:{color:'rgba(184,150,46,0.04)'}},
+        y:{ticks:{color:'#555',font:{size:10}},grid:{color:'rgba(184,150,46,0.04)'}}
+      }:{},
+      cutout: type==='doughnut'?'62%':undefined,
+    }
+  });
+}
+
+// ═══════════════════════════════════════
+// CUSTOMER DRAWER
+// ═══════════════════════════════════════
+async function openCustomerDrawer(acc) {
+  document.getElementById('drawerTitle').textContent = `Customer: ${acc}`;
+  document.getElementById('drawerBody').innerHTML = '<div style="padding:20px;color:var(--dim);text-align:center;">⏳ Loading...</div>';
+  document.getElementById('drawerOverlay').classList.add('open');
+
+  const r = await fetch(`/api/admin/user/${acc}`);
+  const d = await r.json();
+  if(!d.user){ document.getElementById('drawerBody').innerHTML='<div style="padding:20px;color:var(--red);">Failed to load</div>'; return; }
+  const u = d.user;
+  const txns = d.transactions || [];
+
+  const txnRows = txns.map(t=>{
+    const isCredit = t.to_account === acc;
+    const amt = parseFloat(t.amount);
+    return `<div class="txn-row" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(184,150,46,0.04);">
+      <div style="width:28px;height:28px;border-radius:7px;background:${isCredit?'rgba(63,207,113,0.12)':'rgba(255,85,85,0.12)'};display:flex;align-items:center;justify-content:center;font-size:12px;">${isCredit?'📥':'📤'}</div>
+      <div style="flex:1;">
+        <div style="font-size:12px;font-weight:500;">${t.description||t.txn_type}</div>
+        <div style="font-size:10px;color:var(--dim);">${t.txn_id} · ${fmt(t.created_at)}</div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:${isCredit?'var(--green)':'var(--red)'};">${isCredit?'+':'−'}₹${fmtNum(amt)}</div>
+      ${t.is_flagged?'<span class="flag-tag">⚠️</span>':''}
+    </div>`;
+  }).join('');
+
+  document.getElementById('drawerTitle').textContent = u.name;
+  document.getElementById('drawerBody').innerHTML = `
+    <div class="drawer-section">
+      <div class="drawer-section-title">Account Overview</div>
+      <div style="background:rgba(200,168,75,0.06);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
+        <div class="balance-big">₹${fmtNum(u.balance)}</div>
+        <div class="balance-sub">${u.account_type||'savings'} account · <span class="badge ${u.is_locked?'badge-locked':'badge-active'}">${u.is_locked?'Locked':'Active'}</span></div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">Account No</div><div class="info-val mono">${u.account_number}</div></div>
+        <div class="info-item"><div class="info-label">Account Type</div><div class="info-val">${u.account_type||'—'}</div></div>
+        <div class="info-item"><div class="info-label">Email</div><div class="info-val" style="font-size:12px;">${u.email||'—'}</div></div>
+        <div class="info-item"><div class="info-label">Phone</div><div class="info-val">${u.phone||'—'}</div></div>
+        <div class="info-item"><div class="info-label">Joined</div><div class="info-val" style="font-size:11px;">${fmt(u.created_at)}</div></div>
+        <div class="info-item"><div class="info-label">Last Login</div><div class="info-val" style="font-size:11px;">${u.last_login?fmt(u.last_login):'Never'}</div></div>
+      </div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Admin Actions</div>
+      <div class="action-row">
+        <button class="drawer-btn ${u.is_locked?'act-green':'act-red'}" style="border-color:${u.is_locked?'rgba(63,207,113,0.4)':'rgba(255,85,85,0.4)'};" onclick="toggleLock('${u.account_number}',${u.is_locked})">${u.is_locked?'🔓 Unlock Account':'🔒 Lock Account'}</button>
+        <button class="drawer-btn act-gold" style="border-color:rgba(200,168,75,0.4);" onclick="openAdjustBalance('${u.account_number}','${u.name}')">💰 Adjust Balance</button>
+        <button class="drawer-btn act-orange" style="border-color:rgba(255,159,67,0.4);" onclick="openResetPw('${u.account_number}','${u.name}')">🔑 Reset Password</button>
+      </div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Recent Transactions (${txns.length})</div>
+      ${txnRows || '<div style="color:var(--dim);font-size:12px;text-align:center;padding:12px;">No transactions yet</div>'}
+    </div>
+  `;
+}
+
+function closeDrawer(e){
+  if(e.target===document.getElementById('drawerOverlay')) closeDrawerDirect();
+}
+function closeDrawerDirect(){
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+
+// ═══════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════
+async function toggleLock(acc, isLocked) {
+  const r = await fetch(`/api/admin/user/${acc}/toggle-lock`,{method:'POST'});
+  const d = await r.json();
+  if(d.success){ showToast(isLocked?'✅ Account unlocked':'🔒 Account locked'); await loadAll(); }
+}
+
+function openAdjustBalance(acc, name) {
+  document.getElementById('balModalSub').textContent = `Customer: ${name} (${acc})`;
+  document.getElementById('balAcc').value = acc;
+  document.getElementById('balAmount').value = '';
+  document.getElementById('balError').style.display='none';
+  document.getElementById('balModal').classList.add('open');
+}
+
+async function doAdjustBalance() {
+  const acc = document.getElementById('balAcc').value;
+  const amount = parseFloat(document.getElementById('balAmount').value);
+  const action = document.getElementById('balAction').value;
+  const errEl = document.getElementById('balError');
+  if(!amount||amount<=0){ errEl.textContent='Enter a valid amount'; errEl.style.display='block'; return; }
+  const r = await fetch(`/api/admin/user/${acc}/adjust-balance`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount,action})});
+  const d = await r.json();
+  if(d.success){ showToast(`✅ Balance ${action}ed ₹${fmtNum(amount)} for ${acc}`); closeModal('balModal'); await loadAll(); }
+  else { errEl.textContent=d.error||'Failed'; errEl.style.display='block'; }
+}
+
+function openResetPw(acc, name) {
+  document.getElementById('pwModalSub').textContent = `Customer: ${name} (${acc})`;
+  document.getElementById('pwAcc').value = acc;
+  document.getElementById('pwNew').value = 'Pass@123';
+  document.getElementById('pwModal').classList.add('open');
+}
+
+async function doResetPw() {
+  const acc = document.getElementById('pwAcc').value;
+  const pw = document.getElementById('pwNew').value;
+  if(!pw||pw.length<6){ showToast('Password must be 6+ characters','error'); return; }
+  const r = await fetch(`/api/admin/user/${acc}/reset-password`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+  const d = await r.json();
+  if(d.success){ showToast(`✅ Password reset for ${acc}`); closeModal('pwModal'); }
+  else showToast(d.error||'Failed','error');
+}
+
+async function flagAction(id, action) {
+  await fetch(`/api/admin/flag/${id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action})});
+  const msgs = {approve:'✅ Transaction approved',reject:'❌ Transaction rejected',flag:'🚩 Transaction flagged'};
+  showToast(msgs[action]||'Done'); await loadAll();
+}
+
+function openBankerResolve(id) {
+  document.getElementById('bankerReqId').value = id;
+  document.getElementById('bankerNote').value = '';
+  document.getElementById('bankerModalSub').textContent = `Request #${id}`;
+  document.getElementById('bankerModal').classList.add('open');
+}
+
+async function doBankerResolve() {
+  const id = document.getElementById('bankerReqId').value;
+  const note = document.getElementById('bankerNote').value || 'Resolved by admin';
+  const r = await fetch(`/api/admin/banker-request/${id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'resolved',note})});
+  const d = await r.json();
+  if(d.success){ showToast('✅ Request resolved'); closeModal('bankerModal'); await loadAll(); }
+}
+
+// ═══════════════════════════════════════
+// CREATE USER
+// ═══════════════════════════════════════
+function openCreateUser() {
+  ['uName','uPhone','uEmail','uPassword'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('uBalance').value='1000';
+  document.getElementById('uType').value='savings';
+  document.getElementById('userError').style.display='none';
+  document.getElementById('userSuccess').style.display='none';
+  document.getElementById('userModal').classList.add('open');
+}
+
+async function createUser() {
+  const name = document.getElementById('uName').value.trim();
+  const email = document.getElementById('uEmail').value.trim();
+  const phone = document.getElementById('uPhone').value.trim();
+  const pw = document.getElementById('uPassword').value;
+  const balance = parseFloat(document.getElementById('uBalance').value||0);
+  const accType = document.getElementById('uType').value;
+  const errEl = document.getElementById('userError');
+  const sucEl = document.getElementById('userSuccess');
+  errEl.style.display='none'; sucEl.style.display='none';
+
+  if(!name||!email){ errEl.textContent='Name and email are required'; errEl.style.display='block'; return; }
+  if(!pw||pw.length<6){ errEl.textContent='Password must be at least 6 characters'; errEl.style.display='block'; return; }
+
+  const btn = document.getElementById('createUserBtn');
+  btn.textContent='Creating...'; btn.disabled=true;
+  try {
+    const r = await fetch('/api/admin/create-user',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,email,phone,password:pw,account_type:accType,balance})
+    });
+    const d = await r.json();
+    if(d.success){
+      sucEl.textContent = `✅ ${d.message}`;
+      sucEl.style.display='block';
+      showToast(`✅ Customer ${name} created! Account: ${d.account_number}`,'success');
+      await loadAll();
+      nav('customers');
+      setTimeout(()=>closeModal('userModal'),2500);
+    } else {
+      errEl.textContent = d.error||'Failed to create account';
+      errEl.style.display='block';
+    }
+  } catch(e){ errEl.textContent='Network error'; errEl.style.display='block'; }
+  finally { btn.textContent='Create Account →'; btn.disabled=false; }
+}
+
+// ═══════════════════════════════════════
+// CSV EXPORT
+// ═══════════════════════════════════════
+function exportCSV() {
+  const users = D.users || [];
+  const header = 'Account,Name,Email,Phone,Balance,Type,Status,Joined,Last Login';
+  const rows = users.map(u=>[
+    u.account_number, u.name, u.email||'', u.phone||'',
+    u.balance, u.account_type||'savings',
+    u.is_locked?'Locked':'Active',
+    (u.created_at||'').substring(0,10),
+    (u.last_login||'').substring(0,10)||'Never'
+  ].join(','));
+  const csv = [header,...rows].join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`smartbank_customers_${new Date().toISOString().substring(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('📥 CSV downloaded!','success');
+}
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function nav(name) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  const titles={overview:'Dashboard Overview',analytics:'Analytics',customers:'All Customers',transactions:'All Transactions',flagged:'Flagged Transactions',banker:'Banker Requests',chatlogs:'AI Chat Logs',scheduled:'Scheduled Transfers'};
+  document.getElementById('topbarTitle').textContent = titles[name]||name;
+  // Highlight sidebar btn
+  const btnMap={overview:0,analytics:1,customers:2,transactions:4,flagged:5,banker:6,chatlogs:8,scheduled:9};
+  const btns = document.querySelectorAll('.nav-btn');
+  if(btnMap[name]!==undefined) btns[btnMap[name]]?.classList.add('active');
+}
+
+function renderPagination(elId, total, current, onPage) {
+  const pages = Math.ceil(total/PER_PAGE);
+  if(pages<=1){ document.getElementById(elId).innerHTML=''; return; }
+  let html='';
+  for(let i=1;i<=Math.min(pages,8);i++){
+    html+=`<button class="page-btn ${i===current?'active':''}" onclick="(${onPage.toString()})(${i})">${i}</button>`;
+  }
+  if(pages>8) html+=`<button class="page-btn" onclick="(${onPage.toString()})(${pages})">${pages}</button>`;
+  document.getElementById(elId).innerHTML=html;
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function fmtNum(n){ return parseFloat(n).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2}); }
+function fmt(dt){ if(!dt) return '—'; try{ return new Date(dt).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch{return dt;} }
+
+async function logout(){
+  await fetch('/api/logout',{method:'POST'});
+  window.location.href='/login';
+}
+
+function showToast(msg, type='success') {
+  const existing = document.getElementById('toast');
+  if(existing) existing.remove();
+  const t = document.createElement('div');
+  t.id='toast';
+  const colors = {
+    success:['rgba(63,207,113,0.15)','rgba(63,207,113,0.4)'],
+    error:['rgba(255,85,85,0.15)','rgba(255,85,85,0.4)'],
+    warn:['rgba(255,193,7,0.15)','rgba(255,193,7,0.4)']
+  };
+  const [bg,border] = colors[type]||colors.success;
+  t.style.cssText=`position:fixed;bottom:24px;right:24px;z-index:9999;padding:13px 18px;border-radius:12px;background:${bg};border:1px solid ${border};color:#fff;font-size:13px;max-width:360px;animation:slideUp 0.3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.4);`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+
+// Auto-refresh every 60 seconds
+setInterval(loadAll, 60000);
+
+// ═══════════════════════════════════════
+// LANGUAGE SYSTEM
+// ═══════════════════════════════════════
+window.SB_LANG = window.SB_LANG || 'en';
+
+const TRANSLATIONS = {
+  en: {
+    'admin_badge':'ADMIN','full_access':'Full Access','dashboard':'Dashboard',
+    'an_analytics':'Analytics','all_customers':'All Customers','add_customer':'Add Customer',
+    'an_transactions':'Transactions','flagged':'Flagged','banker_requests':'Banker Requests',
+    'chat_logs':'Chat Logs','an_scheduled':'Scheduled','overview_section':'Overview',
+    'customers_section':'Customers','operations_section':'Operations','monitoring_section':'Monitoring',
+    'live':'Live','refresh':'🔄 Refresh','new_customer':'➕ New Customer',
+    'sign_out':'🚪 Sign Out','lang_label':'🌐 Language',
+  },
+  ta: {
+    'admin_badge':'நிர்வாகி','full_access':'முழு அணுகல்','dashboard':'கட்டுப்பாட்டு பலகம்',
+    'an_analytics':'பகுப்பாய்வு','all_customers':'அனைத்து வாடிக்கையாளர்கள்','add_customer':'வாடிக்கையாளர் சேர்',
+    'an_transactions':'பரிவர்த்தனைகள்','flagged':'கொடியிட்டவை','banker_requests':'வங்கியாளர் கோரிக்கைகள்',
+    'chat_logs':'AI உரையாடல் பதிவுகள்','an_scheduled':'திட்டமிட்டவை','overview_section':'கண்ணோட்டம்',
+    'customers_section':'வாடிக்கையாளர்கள்','operations_section':'செயல்பாடுகள்','monitoring_section':'கண்காணிப்பு',
+    'live':'நேரலை','refresh':'🔄 புதுப்பி','new_customer':'➕ புதிய வாடிக்கையாளர்',
+    'sign_out':'🚪 வெளியேறு','lang_label':'🌐 மொழி',
+  },
+  hi: {
+    'admin_badge':'व्यवस्थापक','full_access':'पूर्ण पहुँच','dashboard':'डैशबोर्ड',
+    'an_analytics':'विश्लेषण','all_customers':'सभी ग्राहक','add_customer':'ग्राहक जोड़ें',
+    'an_transactions':'लेनदेन','flagged':'चिह्नित','banker_requests':'बैंकर अनुरोध',
+    'chat_logs':'AI चैट लॉग','an_scheduled':'अनुसूचित','overview_section':'अवलोकन',
+    'customers_section':'ग्राहक','operations_section':'परिचालन','monitoring_section':'निगरानी',
+    'live':'लाइव','refresh':'🔄 रीफ्रेश','new_customer':'➕ नया ग्राहक',
+    'sign_out':'🚪 साइन आउट','lang_label':'🌐 भाषा',
+  }
+};
+
+function T(key) {
+  return (TRANSLATIONS[window.SB_LANG]||TRANSLATIONS.en)[key] || (TRANSLATIONS.en[key]||key);
+}
+
+function applyLang(lang) {
+  window.SB_LANG = lang;
+  try { localStorage.setItem('sb_lang', lang); } catch(e) {}
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = T(key);
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.setAttribute(el.getAttribute('data-i18n-attr')||'placeholder', val);
+    } else {
+      el.innerHTML = val;
+    }
+  });
+  document.querySelectorAll('.lang-switch-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+}
+
+function switchLang(lang) { applyLang(lang); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  let saved = 'en';
+  try { saved = localStorage.getItem('sb_lang') || 'en'; } catch(e) {}
+  applyLang(saved);
+});
+</script>
+
+<!-- Scheduled transfers admin API -->
+<script>
+// Add scheduled endpoint to app if missing  
+fetch('/api/admin/scheduled').catch(()=>{});
+</script>
+
+<style>
+@keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+</style>
+
+<!-- DELETE CUSTOMER MODAL -->
+<div class="modal-overlay" id="deleteModal" style="display:none;" onclick="if(event.target===this)closeDeleteModal()">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="modal-title" style="color:var(--red);">🗑 Delete Customer</div>
+    <p style="color:#ccc;margin:16px 0 8px;">You are about to permanently delete:</p>
+    <div style="background:#1c1c26;border:1px solid rgba(255,85,85,0.3);border-radius:10px;padding:14px 18px;margin-bottom:18px;">
+      <div style="font-size:18px;font-weight:700;color:#fff;" id="delCustomerName">—</div>
+      <div style="font-size:13px;color:var(--dim);margin-top:4px;">Account: <span id="delCustomerAcc" style="color:var(--gold);font-weight:600;">—</span></div>
+    </div>
+    <p style="color:var(--red);font-size:12px;margin-bottom:18px;">⚠️ This will permanently delete the account and ALL transaction history. This action <strong>cannot be undone</strong>.</p>
+    <div style="display:flex;gap:10px;">
+      <button class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()" style="flex:1;">Cancel</button>
+      <button class="modal-btn" onclick="executeDelete()" id="deleteConfirmBtn" style="flex:1;background:var(--red);color:#fff;border-color:var(--red);">Yes, Delete Permanently</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

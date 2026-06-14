@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartBank — Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#ffffff; --gold:#b8962e; --gold2:#d4af50;
+  --surface:#f5f0e8; --card:#ffffff; --card2:#faf7f0;
+  --border:rgba(184,150,46,0.35); --border2:rgba(184,150,46,0.15);
+  --dim:#6b5e3a; --muted:#c9b97a;
+  --purple:#7c3aed; --purple2:#a78bfa;
+  --green:#22c55e; --red:#ef4444;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#2a1f0a;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+
+/* BG */
+.bg-wrap{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.15;animation:floatOrb 10s ease-in-out infinite;}
+.orb1{width:500px;height:500px;background:#c8a84b;top:-180px;right:-120px;}
+.orb2{width:380px;height:380px;background:#7c3aed;bottom:-100px;left:-80px;animation-delay:3.5s;}
+.orb3{width:260px;height:260px;background:#0ea5e9;top:55%;left:45%;animation-delay:1.8s;}
+@keyframes floatOrb{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-24px,-28px) scale(1.06);}}
+.grid-lines{position:fixed;inset:0;background-image:linear-gradient(rgba(184,150,46,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(184,150,46,0.08) 1px,transparent 1px);background-size:48px 48px;}
+
+/* LAYOUT */
+.outer{position:relative;z-index:1;width:100%;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.stage{width:100%;max-width:920px;}
+
+/* SCREENS */
+.screen{display:none;animation:screenIn 0.35s cubic-bezier(0.34,1.56,0.64,1);}
+.screen.active{display:block;}
+@keyframes screenIn{from{opacity:0;transform:translateY(22px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+
+/* ─── SCREEN 1: ROLE SELECTOR ─── */
+.role-screen{text-align:center;}
+.bank-logo{font-family:'Syne',sans-serif;font-size:50px;font-weight:800;color:#2a1f0a;margin-bottom:8px;letter-spacing:-1px;}
+.bank-logo span{color:var(--gold);}
+.bank-tagline{font-size:15px;color:var(--dim);margin-bottom:14px;}
+.ai-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(200,168,75,0.08);border:1px solid var(--border);border-radius:100px;padding:6px 18px;font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:52px;}
+.ai-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:660px;margin:0 auto 36px;}
+.role-card{background:var(--card);border:2px solid var(--border);box-shadow:0 2px 16px rgba(184,150,46,0.08);border-radius:24px;padding:38px 28px;cursor:pointer;transition:all 0.25s;text-align:center;position:relative;overflow:hidden;}
+.role-card::after{content:'';position:absolute;inset:0;border-radius:22px;opacity:0;transition:opacity 0.25s;}
+.role-card:hover{transform:translateY(-7px);}
+.customer-card:hover{border-color:var(--gold);box-shadow:0 20px 60px rgba(200,168,75,0.2);}
+.customer-card:hover::after{background:radial-gradient(circle at 50% 0%,rgba(200,168,75,0.06),transparent 70%);opacity:1;}
+.admin-card:hover{border-color:var(--gold);box-shadow:0 20px 60px rgba(184,150,46,0.25);}
+.admin-card:hover::after{background:radial-gradient(circle at 50% 0%,rgba(184,150,46,0.08),transparent 70%);opacity:1;}
+
+.role-icon{width:76px;height:76px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 20px;transition:transform 0.25s;}
+.role-card:hover .role-icon{transform:scale(1.1) rotate(-4deg);}
+.customer-card .role-icon{background:linear-gradient(135deg,rgba(200,168,75,0.2),rgba(200,168,75,0.04));}
+.admin-card .role-icon{background:linear-gradient(135deg,rgba(184,150,46,0.2),rgba(184,150,46,0.04));}
+
+.role-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#2a1f0a;margin-bottom:8px;}
+.role-desc{font-size:13px;color:var(--dim);line-height:1.7;margin-bottom:20px;}
+.role-feats{list-style:none;text-align:left;margin-bottom:24px;}
+.role-feats li{font-size:12px;color:#5a4a2a;padding:5px 0;display:flex;align-items:center;gap:9px;}
+.customer-card .role-feats li::before{content:'✦';font-size:8px;color:var(--gold);}
+.admin-card .role-feats li::before{content:'✦';font-size:8px;color:var(--gold);}
+.role-btn{width:100%;padding:12px;border-radius:100px;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;letter-spacing:0.3px;}
+.role-btn:hover{transform:scale(1.02);}
+.customer-card .role-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink);}
+.admin-card .role-btn{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;}
+.role-note{color:var(--muted);font-size:12px;display:flex;align-items:center;justify-content:center;gap:10px;max-width:660px;margin:0 auto;}
+.role-note::before,.role-note::after{content:'';flex:1;height:1px;background:var(--muted);}
+
+/* ─── SCREENS 2 & 3: LOGIN ─── */
+.login-layout{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(184,150,46,0.1);border:1px solid var(--border);border-radius:100px;padding:7px 17px;font-size:12px;color:var(--dim);cursor:pointer;transition:all 0.15s;margin-bottom:34px;font-family:'DM Sans',sans-serif;}
+.back-btn:hover{background:rgba(184,150,46,0.2);color:#2a1f0a;}
+.brand-big{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;color:#2a1f0a;line-height:1.15;margin-bottom:12px;}
+.brand-big span.g{color:var(--gold);}
+.brand-big span.p{color:var(--purple2);}
+.brand-blurb{font-size:13px;color:var(--dim);line-height:1.75;margin-bottom:34px;}
+.feat-list{list-style:none;}
+.feat-list li{display:flex;align-items:center;gap:12px;font-size:12px;color:#5a4a2a;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.feat-list li:last-child{border:none;}
+.fi{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.fig{background:rgba(200,168,75,0.12);}
+.fip{background:rgba(184,150,46,0.12);}
+
+/* FORM CARD */
+.fcard{background:var(--card);border:1px solid var(--border);box-shadow:0 4px 32px rgba(184,150,46,0.12);border-radius:24px;padding:36px;position:relative;overflow:hidden;}
+.fcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold) 50%,transparent);}
+.fcard.admin-fcard::before{background:linear-gradient(90deg,transparent,var(--gold) 50%,transparent);}
+
+.portal-pill{display:inline-flex;align-items:center;gap:6px;border-radius:100px;padding:5px 14px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;}
+.pill-cust{background:rgba(200,168,75,0.1);border:1px solid var(--border);color:var(--gold);}
+.pill-admin{background:rgba(184,150,46,0.1);border:1px solid var(--border);color:var(--gold);}
+
+.ftitle{font-family:'Syne',sans-serif;font-size:23px;font-weight:700;color:#2a1f0a;margin-bottom:3px;}
+.fsub{font-size:13px;color:var(--dim);margin-bottom:22px;}
+
+/* TABS inside form */
+.ftab.act-a{background:var(--purple);color:#fff;}
+
+
+/* FIELDS */
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--dim);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;}
+.fg input,.fg select{width:100%;padding:12px 14px;background:#faf7f0;border:1px solid rgba(184,150,46,0.3);border-radius:10px;color:#2a1f0a;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:all 0.2s;}
+.fg input:focus,.fg select:focus{border-color:var(--gold);background:rgba(200,168,75,0.04);box-shadow:0 0 0 3px rgba(200,168,75,0.08);}
+.afg input:focus,.afg select:focus{border-color:var(--gold)!important;background:rgba(184,150,46,0.04)!important;box-shadow:0 0 0 3px rgba(184,150,46,0.1)!important;}
+.fg input::placeholder{color:rgba(90,74,42,0.4);}
+.fg select option{background:#fff;color:#2a1f0a;}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+
+.sbtn{width:100%;padding:13px;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;transition:all 0.2s;letter-spacing:0.3px;margin-top:4px;}
+.sbtn-c{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink);}
+.sbtn-c:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(200,168,75,0.3);}
+.sbtn-a{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#2a1f0a;}
+.sbtn-a:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(184,150,46,0.35);}
+
+/* MESSAGES */
+.emsg{padding:10px 13px;border-radius:9px;font-size:12px;margin-bottom:12px;display:none;}
+.emsg-e{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;}
+.emsg-s{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#86efac;}
+
+/* ACCOUNT REVEAL */
+
+/* DEMO CHIPS */
+.demo-section{margin-top:16px;padding-top:15px;border-top:1px solid rgba(255,255,255,0.06);}
+.demo-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.demo-hint{font-size:11px;color:var(--muted);margin-top:6px;}
+
+/* SECURITY NOTE */
+.sec-note{margin-top:18px;padding:12px 14px;background:rgba(184,150,46,0.06);border:1px solid rgba(184,150,46,0.25);border-radius:10px;font-size:11px;color:var(--dim);line-height:1.65;}
+
+/* SPINNER */
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(0,0,0,0.2);border-top-color:currentColor;border-radius:50%;animation:sp 0.6s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes sp{to{transform:rotate(360deg);}}
+
+/* RESPONSIVE */
+@media(max-width:720px){
+  .role-cards{grid-template-columns:1fr;}
+  .login-layout{grid-template-columns:1fr;}
+  .login-brand-side{display:none;}
+}
+
+/* ── LANGUAGE SWITCHER ── */
+.lang-switcher {
+  display:flex;align-items:center;gap:8px;
+  justify-content:center;margin-bottom:28px;
+}
+.lang-switch-label {
+  font-size:12px;color:var(--dim);font-weight:600;letter-spacing:0.5px;
+}
+.lang-switch-btn {
+  padding:5px 16px;border-radius:100px;font-size:12px;font-weight:700;
+  border:1.5px solid var(--border);background:none;color:var(--dim);
+  cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;
+}
+.lang-switch-btn:hover { border-color:var(--gold);color:#2a1f0a; }
+.lang-switch-btn.active {
+  background:var(--gold);border-color:var(--gold);
+  color:var(--ink);box-shadow:0 4px 14px rgba(184,150,46,0.3);
+}
+
+</style>
+</head>
+<body>
+<div class="grid-lines"></div>
+<div class="bg-wrap">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<div class="outer"><div class="stage">
+
+<!-- ════════════════════════════════
+     SCREEN 1 — CHOOSE YOUR ROLE
+════════════════════════════════ -->
+<div class="screen active" id="s-role">
+  <div class="role-screen">
+    <div class="bank-logo">Smart<span>Bank</span></div>
+    <div class="bank-tagline" data-i18n="bank_tagline">Intelligent NLP Banking System</div>
+    <div class="ai-badge" data-i18n="ai_badge">🏦 AI Powered · Multilingual · Secure</div>
+
+    <!-- LANGUAGE SWITCHER -->
+    <div class="lang-switcher">
+      <span class="lang-switch-label" data-i18n="lang_label">🌐 Language</span>
+      <button class="lang-switch-btn active" data-lang="en" onclick="switchLang('en')">English</button>
+      <button class="lang-switch-btn" data-lang="ta" onclick="switchLang('ta')">தமிழ்</button>
+      <button class="lang-switch-btn" data-lang="hi" onclick="switchLang('hi')">हिन्दी</button>
+    </div>
+
+    <div class="role-cards">
+      <!-- CUSTOMER -->
+      <div class="role-card customer-card" onclick="goScreen('customer')">
+        <div class="role-icon">👤</div>
+        <div class="role-name" data-i18n="customer_portal">Customer Portal</div>
+        <div class="role-desc" data-i18n="customer_desc">Access your account, transfer money, chat with the AI assistant and track your finances.</div>
+        <button class="role-btn" data-i18n="enter_customer">Enter as Customer →</button>
+      </div>
+      <!-- ADMIN -->
+      <div class="role-card admin-card" onclick="goScreen('admin')">
+        <div class="role-icon">🔐</div>
+        <div class="role-name" data-i18n="admin_portal">Admin Portal</div>
+        <div class="role-desc" data-i18n="admin_desc">Full system management — monitor customers, transactions, fraud alerts and analytics.</div>
+        <button class="role-btn" data-i18n="enter_admin">Enter as Admin →</button>
+      </div>
+    </div>
+    <div class="role-note" data-i18n="authorized_only">Authorized access only — all sessions are logged and monitored</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     SCREEN 2 — CUSTOMER
+════════════════════════════════ -->
+<div class="screen" id="s-customer">
+  <div class="login-layout">
+    <div class="login-brand-side">
+      <button class="back-btn" onclick="goBack()" data-i18n="back_to_portal">← Back to Portal</button>
+      <div class="brand-big" data-i18n="customer_brand_title">Smart<span class="g">Bank</span><br>Customer<br>Portal</div>
+      <p class="brand-blurb" data-i18n="customer_brand_blurb">Your intelligent banking companion. Check balances, transfer money, and get instant answers — in English, Tamil or Hindi.</p>
+    </div>
+    <div>
+      <div class="fcard" id="custCard">
+        <div class="portal-pill pill-cust">👤 Customer Portal</div>
+        <div class="ftitle" id="cTitle" data-i18n="welcome_back">Welcome Back</div>
+        <div class="fsub" id="cSub" data-i18n="sign_in_sub">Sign in to your SmartBank account</div>
+
+        <!-- SIGN IN -->
+        <div id="cLogin">
+          <div class="emsg emsg-e" id="cLoginErr"></div>
+          <div class="emsg emsg-s" id="cLoginOk"></div>
+          <div class="fg">
+            <label data-i18n="account_number">Account Number</label>
+            <input id="cAcc" type="text" placeholder="e.g. 10001" data-i18n="acc_placeholder" data-i18n-attr="placeholder">
+          </div>
+          <div class="fg">
+            <label data-i18n="password">Password</label>
+            <input id="cPw" type="password" placeholder="Your password" data-i18n="pw_placeholder" data-i18n-attr="placeholder" onkeydown="if(event.key==='Enter')cLogin()">
+          </div>
+          <button class="sbtn sbtn-c" id="cLoginBtn" onclick="cLogin()" data-i18n="sign_in_btn">Sign In →</button>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     SCREEN 3 — ADMIN
+════════════════════════════════ -->
+<div class="screen" id="s-admin">
+  <div class="login-layout">
+    <div class="login-brand-side">
+      <button class="back-btn" onclick="goBack()" data-i18n="back_to_portal">← Back to Portal</button>
+      <div class="brand-big" data-i18n="admin_brand_title">Smart<span class="g">Bank</span><br>Admin<br>Control</div>
+      <p class="brand-blurb" data-i18n="admin_brand_blurb">Restricted access — administrators only.</p>
+    </div>
+    <div>
+      <div class="fcard admin-fcard">
+        <div class="portal-pill pill-admin">🔐 Admin Portal</div>
+        <div class="ftitle" data-i18n="admin_sign_in">Admin Sign In</div>
+        <div class="fsub" data-i18n="admin_only">Authorized administrators only</div>
+
+        <div class="emsg emsg-e" id="aErr"></div>
+        <div class="emsg emsg-s" id="aOk"></div>
+
+        <div class="fg afg">
+          <label data-i18n="admin_acc_label">Admin Account Number</label>
+          <input id="aAcc" type="text" placeholder="e.g. 10000" data-i18n="admin_acc_placeholder" data-i18n-attr="placeholder">
+        </div>
+        <div class="fg afg">
+          <label data-i18n="admin_pw_label">Admin Password</label>
+          <input id="aPw" type="password" placeholder="Admin password" data-i18n="admin_pw_placeholder" data-i18n-attr="placeholder" onkeydown="if(event.key==='Enter')aLogin()">
+        </div>
+        <button class="sbtn sbtn-a" id="aLoginBtn" onclick="aLogin()" data-i18n="admin_login_btn">Access Admin Panel →</button>
+
+
+        <div class="sec-note">
+          <span data-i18n="admin_security">🔒 This portal is for authorized personnel only.<br>All admin actions are logged and monitored.<br>Unauthorized access will be reported.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div></div><!-- /stage /outer -->
+
+<script>
+// ── NAVIGATION ──────────────────────────────────
+function goScreen(role) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const t = document.getElementById('s-' + role);
+  t.style.display = 'none';
+  requestAnimationFrame(() => {
+    t.style.display = '';
+    requestAnimationFrame(() => t.classList.add('active'));
+  });
+}
+function goBack() { goScreen('role'); }
+
+// ── CUSTOMER TAB SWITCH ─────────────────────────
+
+// ── FILL DEMOS ──────────────────────────────────
+
+
+
+// ── MESSAGES ────────────────────────────────────
+function msg(id, text, type = 'e') {
+  const el = document.getElementById(id);
+  el.textContent = text; el.style.display = 'block';
+  if (type === 'e') setTimeout(() => el.style.display = 'none', 5500);
+}
+function hideMsg(id) { document.getElementById(id).style.display = 'none'; }
+
+// ── CUSTOMER LOGIN ──────────────────────────────
+async function cLogin() {
+  const acc = document.getElementById('cAcc').value.trim().toUpperCase();
+  const pw  = document.getElementById('cPw').value;
+  hideMsg('cLoginErr'); hideMsg('cLoginOk');
+  if (!acc || !pw) return msg('cLoginErr', window.SB_LANG==='ta' ? '⚠️ கணக்கு எண் மற்றும் கடவுச்சொல்லை உள்ளிடவும்.' : window.SB_LANG==='hi' ? '⚠️ खाता संख्या और पासवर्ड दर्ज करें।' : '⚠️ Please enter your account number and password.');
+
+  const btn = document.getElementById('cLoginBtn');
+  btn.innerHTML = '<span class="spin"></span>Signing in...'; btn.disabled = true;
+  try {
+    const r = await fetch('/api/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ account_number: acc, password: pw })
+    });
+    const d = await r.json();
+    if (d.success) {
+      if (d.is_admin) {
+        msg('cLoginErr', window.SB_LANG==='ta' ? '⚠️ இது நிர்வாகி கணக்கு. நிர்வாகி இடத்தை பயன்படுத்துங்கள்.' : window.SB_LANG==='hi' ? '⚠️ यह व्यवस्थापक खाता है। Admin Portal उपयोग करें।' : '⚠️ This is an admin account. Please use the Admin Portal on the left.');
+      } else {
+        msg('cLoginOk', window.SB_LANG==='ta' ? `✅ வரவேற்கிறோம், ${d.name}! கட்டுப்பாட்டு பலகம் ஏற்றுகிறோம்...` : window.SB_LANG==='hi' ? `✅ स्वागत है, ${d.name}! डैशबोर्ड लोड हो रहा है...` : `✅ Welcome back, ${d.name}! Loading your dashboard...`, 's');
+        setTimeout(() => window.location.href = '/dashboard', 900);
+      }
+    } else {
+      msg('cLoginErr', d.error || (window.SB_LANG==='ta' ? 'உள்நுழைவு தோல்வி. சான்றுகளை சரிபார்க்கவும்.' : window.SB_LANG==='hi' ? 'लॉगिन विफल। कृपया अपनी जानकारी जाँचें।' : 'Login failed. Please check your credentials.'));
+    }
+  } catch { msg('cLoginErr', '❌ Network error. Please try again.'); }
+  finally { btn.innerHTML = 'Sign In →'; btn.disabled = false; }
+}
+
+// ── CUSTOMER REGISTER ────────────────────────────
+
+// ── ADMIN LOGIN ──────────────────────────────────
+async function aLogin() {
+  const acc = document.getElementById('aAcc').value.trim().toUpperCase();
+  const pw  = document.getElementById('aPw').value;
+  hideMsg('aErr'); hideMsg('aOk');
+  if (!acc || !pw) return msg('aErr', window.SB_LANG==='ta' ? '⚠️ நிர்வாகி சான்றுகளை உள்ளிடவும்.' : window.SB_LANG==='hi' ? '⚠️ व्यवस्थापक जानकारी दर्ज करें।' : '⚠️ Please enter admin credentials.');
+
+  const btn = document.getElementById('aLoginBtn');
+  btn.innerHTML = '<span class="spin"></span>Verifying...'; btn.disabled = true;
+  try {
+    const r = await fetch('/api/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ account_number: acc, password: pw })
+    });
+    const d = await r.json();
+    if (d.success) {
+      if (!d.is_admin) {
+        msg('aErr', window.SB_LANG==='ta' ? '⚠️ இது வாடிக்கையாளர் கணக்கு. வாடிக்கையாளர் இடத்தை பயன்படுத்துங்கள்.' : window.SB_LANG==='hi' ? '⚠️ यह ग्राहक खाता है। Customer Portal उपयोग करें।' : '⚠️ This is a customer account. Please use the Customer Portal.');
+      } else {
+        msg('aOk', window.SB_LANG==='ta' ? `✅ வரவேற்கிறோம், ${d.name}! நிர்வாக பலகம் ஏற்றுகிறோம்...` : window.SB_LANG==='hi' ? `✅ स्वागत है, ${d.name}! Admin panel लोड हो रहा है...` : `✅ Welcome, ${d.name}! Loading admin panel...`, 's');
+        setTimeout(() => window.location.href = '/admin', 900);
+      }
+    } else {
+      msg('aErr', d.error || (window.SB_LANG==='ta' ? 'நிர்வாகி உள்நுழைவு தோல்வி. சான்றுகளை சரிபார்க்கவும்.' : window.SB_LANG==='hi' ? 'व्यवस्थापक लॉगिन विफल। जानकारी जाँचें।' : 'Admin login failed. Check your credentials.'));
+    }
+  } catch { msg('aErr', '❌ Network error. Please try again.'); }
+  finally { btn.innerHTML = 'Access Admin Panel →'; btn.disabled = false; }
+}
+// ═══════════════════════════════════════════════
+// EMBEDDED LANGUAGE CORE
+// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// SMARTBANK GLOBAL LANGUAGE SYSTEM
+// ═══════════════════════════════════════════════
+window.SB_LANG = window.SB_LANG || 'en';
+
+const TRANSLATIONS = {
+  en: {
+    // LOGIN PAGE
+    'bank_tagline': 'Intelligent NLP Banking System',
+    'ai_badge': '🏦 AI Powered · Multilingual · Secure',
+    'customer_portal': 'Customer Portal',
+    'customer_desc': 'Access your account, transfer money, chat with the AI assistant and track your finances.',
+    'enter_customer': 'Enter as Customer →',
+    'admin_portal': 'Admin Portal',
+    'admin_desc': 'Full system management — monitor customers, transactions, fraud alerts and analytics.',
+    'enter_admin': 'Enter as Admin →',
+    'authorized_only': 'Authorized access only — all sessions are logged and monitored',
+    'back_to_portal': '← Back to Portal',
+    'customer_brand_title': 'SmartBank Customer Portal',
+    'customer_brand_blurb': 'Your intelligent banking companion. Check balances, transfer money, and get instant answers — in English, Tamil or Hindi.',
+    'welcome_back': 'Welcome Back',
+    'sign_in_sub': 'Sign in to your SmartBank account',
+    'account_number': 'Account Number',
+    'acc_placeholder': 'e.g. 10001',
+    'password': 'Password',
+    'pw_placeholder': 'Your password',
+    'sign_in_btn': 'Sign In →',
+    'admin_brand_title': 'SmartBank Admin Control',
+    'admin_brand_blurb': 'Restricted access — administrators only. Full system oversight including customer management, fraud monitoring and system analytics.',
+    'admin_sign_in': 'Admin Sign In',
+    'admin_only': 'Authorized administrators only',
+    'admin_acc_label': 'Admin Account Number',
+    'admin_acc_placeholder': 'e.g. 10000',
+    'admin_pw_label': 'Admin Password',
+    'admin_pw_placeholder': 'Admin password',
+    'admin_login_btn': 'Access Admin Panel →',
+    'admin_security': '🔒 This portal is for authorized personnel only.<br>All admin actions are logged and monitored.<br>Unauthorized access will be reported.',
+    'lang_label': '🌐 Language',
+    // DASHBOARD NAV
+    'nav_ai': 'AI Assistant',
+    'nav_overview': 'Overview',
+    'nav_history': 'History',
+    'nav_analytics': 'Analytics',
+    'nav_scheduled': 'Scheduled',
+    'nav_banker': 'Banker Support',
+    'sign_out': '🚪 Sign Out',
+    // DASHBOARD TOPBAR
+    'page_chat': 'AI Assistant',
+    'page_overview': 'Overview',
+    'page_history': 'Transaction History',
+    'page_analytics': 'Analytics',
+    'page_scheduled': 'Scheduled Transfers',
+    'page_banker': 'Banker Support',
+    // CHAT
+    'bot_name': 'SmartBank AI',
+    'bot_online': '● Online — NLP Powered',
+    'chat_placeholder': 'Ask anything or click 🎙️ to speak...',
+    'auto_speak': '🔊 Auto-speak replies',
+    'quick_balance': '💰 Balance',
+    'quick_history': '📋 History',
+    'quick_mini': '🧾 Mini Statement',
+    'quick_analytics': '📊 Analytics',
+    'quick_banker': '👨‍💼 Banker',
+    'quick_rates': '📈 Rates',
+    'balance_title': '💰 Account Balance',
+    'savings_account': 'Savings Account',
+    // OVERVIEW
+    'stat_balance': 'Account Balance',
+    'stat_received': 'Total Received',
+    'stat_sent': 'Total Sent',
+    'stat_flagged': 'Flagged Transactions',
+    'all_time': 'All time',
+    'needs_review': 'Needs review',
+    'recent_txns': 'Recent Transactions',
+    // HISTORY
+    'txn_history': 'Transaction History',
+    'txn_id': 'Txn ID', 'type': 'Type', 'from': 'From', 'to': 'To',
+    'amount': 'Amount', 'status': 'Status', 'fraud_score': 'Fraud Score', 'date': 'Date',
+    // ANALYTICS
+    'total_sent': 'Total Sent', 'total_received': 'Total Received',
+    'transactions': 'Transactions', 'avg_txn': 'Avg Transaction',
+    'monthly_chart': '📈 Monthly Spending', 'category_chart': '🍩 Category Breakdown',
+    // SCHEDULED
+    'schedule_title': '📅 Schedule Transfer',
+    'schedule_sub': 'Set up a future-dated transfer',
+    'recipient_acc': 'Recipient Account',
+    'amount_inr': 'Amount (₹)',
+    'schedule_datetime': 'Schedule Date & Time',
+    'schedule_btn': 'Schedule Transfer →',
+    'scheduled_transfers': 'Scheduled Transfers',
+    'scheduled_for': 'Scheduled For', 'created': 'Created',
+    // BANKER
+    'connect_banker': 'Connect to a Banker',
+    'banker_sub': "Need help with something our AI can't handle?<br>Connect directly with a banking professional.",
+    'reason_label': 'Reason for Contact',
+    'reason_placeholder': 'Type your reason here, or select a language and tap 🎙️ to speak…',
+    'request_banker': '📞 Request Banker Assistance',
+    'my_requests': '📋 My Requests',
+    'avg_wait': '⏱ Average wait time: <strong style="color:var(--green)">2-5 minutes</strong>',
+    'available': '🕐 Available: <strong>Mon–Fri, 9:30 AM – 4 PM</strong>',
+    'emergency': '📞 Emergency: <strong>1800-XXX-XXXX (24×7)</strong>',
+    'speak_hint': '🎙️ Speak — text appears above. You can edit anytime after.',
+    'tap_to_speak': 'Tap 🎙️ to speak your reason',
+    // ADMIN
+    'admin_badge': 'ADMIN',
+    'full_access': 'Full Access',
+    'dashboard': 'Dashboard',
+    'an_analytics': 'Analytics',
+    'all_customers': 'All Customers',
+    'add_customer': 'Add Customer',
+    'an_transactions': 'Transactions',
+    'flagged': 'Flagged',
+    'banker_requests': 'Banker Requests',
+    'chat_logs': 'Chat Logs',
+    'an_scheduled': 'Scheduled',
+    'overview_section': 'Overview',
+    'customers_section': 'Customers',
+    'operations_section': 'Operations',
+    'monitoring_section': 'Monitoring',
+    'live': 'Live',
+    'refresh': '🔄 Refresh',
+    'new_customer': '➕ New Customer',
+  },
+  ta: {
+    // LOGIN PAGE
+    'bank_tagline': 'அறிவுடைய NLP வங்கி அமைப்பு',
+    'ai_badge': '🏦 AI இயங்குகிறது · பலமொழி · பாதுகாப்பான',
+    'customer_portal': 'வாடிக்கையாளர் இடம்',
+    'customer_desc': 'உங்கள் கணக்கை அணுகவும், பணம் அனுப்பவும், AI உதவியாளருடன் பேசவும், உங்கள் நிதியை கண்காணிக்கவும்.',
+    'enter_customer': 'வாடிக்கையாளராக உள்நுழைக →',
+    'admin_portal': 'நிர்வாக இடம்',
+    'admin_desc': 'முழு அமைப்பு மேலாண்மை — வாடிக்கையாளர்கள், பரிவர்த்தனைகள், மோசடி எச்சரிக்கைகள் மற்றும் பகுப்பாய்வு.',
+    'enter_admin': 'நிர்வாகியாக உள்நுழைக →',
+    'authorized_only': 'அங்கீகரிக்கப்பட்ட அணுகல் மட்டுமே — அனைத்து அமர்வுகளும் பதிவு செய்யப்படுகின்றன',
+    'back_to_portal': '← இடத்திற்கு திரும்பு',
+    'customer_brand_title': 'SmartBank வாடிக்கையாளர் இடம்',
+    'customer_brand_blurb': 'உங்கள் அறிவுடைய வங்கி தோழன். இருப்பை சரிபார்க்கவும், பணம் அனுப்பவும், உடனடி பதில்கள் பெறவும்.',
+    'welcome_back': 'மீண்டும் வரவேற்கிறோம்',
+    'sign_in_sub': 'உங்கள் SmartBank கணக்கில் உள்நுழையுங்கள்',
+    'account_number': 'கணக்கு எண்',
+    'acc_placeholder': 'எ.கா. 10001',
+    'password': 'கடவுச்சொல்',
+    'pw_placeholder': 'உங்கள் கடவுச்சொல்',
+    'sign_in_btn': 'உள்நுழை →',
+    'admin_brand_title': 'SmartBank நிர்வாக கட்டுப்பாடு',
+    'admin_brand_blurb': 'கட்டுப்படுத்தப்பட்ட அணுகல் — நிர்வாகிகள் மட்டுமே. வாடிக்கையாளர் மேலாண்மை, மோசடி கண்காணிப்பு மற்றும் பகுப்பாய்வு.',
+    'admin_sign_in': 'நிர்வாகி உள்நுழைவு',
+    'admin_only': 'அங்கீகரிக்கப்பட்ட நிர்வாகிகள் மட்டுமே',
+    'admin_acc_label': 'நிர்வாகி கணக்கு எண்',
+    'admin_acc_placeholder': 'எ.கா. 10000',
+    'admin_pw_label': 'நிர்வாகி கடவுச்சொல்',
+    'admin_pw_placeholder': 'நிர்வாகி கடவுச்சொல்',
+    'admin_login_btn': 'நிர்வாக பலகத்தை அணுகு →',
+    'admin_security': '🔒 இந்த இடம் அங்கீகரிக்கப்பட்ட பணியாளர்களுக்கு மட்டுமே.<br>அனைத்து நிர்வாக செயல்களும் பதிவு செய்யப்படுகின்றன.<br>அனுமதியற்ற அணுகல் புகாரளிக்கப்படும்.',
+    'lang_label': '🌐 மொழி',
+    // DASHBOARD NAV
+    'nav_ai': 'AI உதவியாளர்',
+    'nav_overview': 'கண்ணோட்டம்',
+    'nav_history': 'வரலாறு',
+    'nav_analytics': 'பகுப்பாய்வு',
+    'nav_scheduled': 'திட்டமிட்டவை',
+    'nav_banker': 'வங்கியாளர் ஆதரவு',
+    'sign_out': '🚪 வெளியேறு',
+    // DASHBOARD TOPBAR
+    'page_chat': 'AI உதவியாளர்',
+    'page_overview': 'கண்ணோட்டம்',
+    'page_history': 'பரிவர்த்தனை வரலாறு',
+    'page_analytics': 'பகுப்பாய்வு',
+    'page_scheduled': 'திட்டமிட்ட பரிமாற்றங்கள்',
+    'page_banker': 'வங்கியாளர் ஆதரவு',
+    // CHAT
+    'bot_name': 'SmartBank AI',
+    'bot_online': '● இணையத்தில் உள்ளது — NLP இயங்குகிறது',
+    'chat_placeholder': 'எதையும் கேளுங்கள் அல்லது 🎙️ அழுத்தி பேசுங்கள்...',
+    'auto_speak': '🔊 பதில்களை தானாக பேசு',
+    'quick_balance': '💰 இருப்பு',
+    'quick_history': '📋 வரலாறு',
+    'quick_mini': '🧾 சிறு அறிக்கை',
+    'quick_analytics': '📊 பகுப்பாய்வு',
+    'quick_banker': '👨‍💼 வங்கியாளர்',
+    'quick_rates': '📈 வட்டி விகிதங்கள்',
+    'balance_title': '💰 கணக்கு இருப்பு',
+    'savings_account': 'சேமிப்பு கணக்கு',
+    // OVERVIEW
+    'stat_balance': 'கணக்கு இருப்பு',
+    'stat_received': 'மொத்தம் பெற்றது',
+    'stat_sent': 'மொத்தம் அனுப்பியது',
+    'stat_flagged': 'கொடியிட்ட பரிவர்த்தனைகள்',
+    'all_time': 'எல்லா நேரமும்',
+    'needs_review': 'மதிப்பாய்வு தேவை',
+    'recent_txns': 'சமீபத்திய பரிவர்த்தனைகள்',
+    // HISTORY
+    'txn_history': 'பரிவர்த்தனை வரலாறு',
+    'txn_id': 'பரிவர்த்தனை ID', 'type': 'வகை', 'from': 'இருந்து', 'to': 'க்கு',
+    'amount': 'தொகை', 'status': 'நிலை', 'fraud_score': 'மோசடி மதிப்பெண்', 'date': 'தேதி',
+    // ANALYTICS
+    'total_sent': 'மொத்தம் அனுப்பியது', 'total_received': 'மொத்தம் பெற்றது',
+    'transactions': 'பரிவர்த்தனைகள்', 'avg_txn': 'சராசரி பரிவர்த்தனை',
+    'monthly_chart': '📈 மாதாந்திர செலவு', 'category_chart': '🍩 வகைப்படுத்தல்',
+    // SCHEDULED
+    'schedule_title': '📅 பரிமாற்றம் திட்டமிடு',
+    'schedule_sub': 'எதிர்கால தேதி பரிமாற்றம் அமைக்கவும்',
+    'recipient_acc': 'பெறுநர் கணக்கு',
+    'amount_inr': 'தொகை (₹)',
+    'schedule_datetime': 'திட்டமிட்ட தேதி மற்றும் நேரம்',
+    'schedule_btn': 'பரிமாற்றம் திட்டமிடு →',
+    'scheduled_transfers': 'திட்டமிட்ட பரிமாற்றங்கள்',
+    'scheduled_for': 'திட்டமிட்ட நேரம்', 'created': 'உருவாக்கப்பட்டது',
+    // BANKER
+    'connect_banker': 'வங்கியாளருடன் இணைக',
+    'banker_sub': 'எங்கள் AI தீர்க்க முடியாத பிரச்சனையா?<br>நேரடியாக வங்கி நிபுணருடன் இணையுங்கள்.',
+    'reason_label': 'தொடர்பு கொள்ள காரணம்',
+    'reason_placeholder': 'உங்கள் காரணத்தை இங்கே தட்டச்சு செய்யுங்கள் அல்லது 🎙️ அழுத்தி பேசுங்கள்…',
+    'request_banker': '📞 வங்கியாளர் உதவி கோரு',
+    'my_requests': '📋 என் கோரிக்கைகள்',
+    'avg_wait': '⏱ சராசரி காத்திருக்கும் நேரம்: <strong style="color:var(--green)">2-5 நிமிடங்கள்</strong>',
+    'available': '🕐 கிடைக்கும் நேரம்: <strong>திங்கள்–வெள்ளி, காலை 9:30 – 4 மணி</strong>',
+    'emergency': '📞 அவசரம்: <strong>1800-XXX-XXXX (24×7)</strong>',
+    'speak_hint': '🎙️ பேசுங்கள் — மேலே உரை தோன்றும். பின்னர் திருத்தலாம்.',
+    'tap_to_speak': '🎙️ அழுத்தி உங்கள் காரணத்தை பேசுங்கள்',
+    // ADMIN
+    'admin_badge': 'நிர்வாகி',
+    'full_access': 'முழு அணுகல்',
+    'dashboard': 'கட்டுப்பாட்டு பலகம்',
+    'an_analytics': 'பகுப்பாய்வு',
+    'all_customers': 'அனைத்து வாடிக்கையாளர்கள்',
+    'add_customer': 'வாடிக்கையாளர் சேர்',
+    'an_transactions': 'பரிவர்த்தனைகள்',
+    'flagged': 'கொடியிட்டவை',
+    'banker_requests': 'வங்கியாளர் கோரிக்கைகள்',
+    'chat_logs': 'AI உரையாடல் பதிவுகள்',
+    'an_scheduled': 'திட்டமிட்டவை',
+    'overview_section': 'கண்ணோட்டம்',
+    'customers_section': 'வாடிக்கையாளர்கள்',
+    'operations_section': 'செயல்பாடுகள்',
+    'monitoring_section': 'கண்காணிப்பு',
+    'live': 'நேரலை',
+    'refresh': '🔄 புதுப்பி',
+    'new_customer': '➕ புதிய வாடிக்கையாளர்',
+  },
+  hi: {
+    // LOGIN PAGE
+    'bank_tagline': 'बुद्धिमान NLP बैंकिंग प्रणाली',
+    'ai_badge': '🏦 AI संचालित · बहुभाषी · सुरक्षित',
+    'customer_portal': 'ग्राहक पोर्टल',
+    'customer_desc': 'अपना खाता एक्सेस करें, पैसे ट्रांसफर करें, AI सहायक से चैट करें और अपने वित्त को ट्रैक करें।',
+    'enter_customer': 'ग्राहक के रूप में प्रवेश करें →',
+    'admin_portal': 'व्यवस्थापक पोर्टल',
+    'admin_desc': 'पूर्ण सिस्टम प्रबंधन — ग्राहक, लेनदेन, धोखाधड़ी अलर्ट और विश्लेषण।',
+    'enter_admin': 'व्यवस्थापक के रूप में प्रवेश करें →',
+    'authorized_only': 'केवल अधिकृत पहुँच — सभी सत्र लॉग और निगरानी में हैं',
+    'back_to_portal': '← पोर्टल पर वापस',
+    'customer_brand_title': 'SmartBank ग्राहक पोर्टल',
+    'customer_brand_blurb': 'आपका बुद्धिमान बैंकिंग साथी। शेष राशि जाँचें, पैसे ट्रांसफर करें और तुरंत जवाब पाएँ।',
+    'welcome_back': 'वापस आपका स्वागत है',
+    'sign_in_sub': 'अपने SmartBank खाते में साइन इन करें',
+    'account_number': 'खाता संख्या',
+    'acc_placeholder': 'जैसे 10001',
+    'password': 'पासवर्ड',
+    'pw_placeholder': 'आपका पासवर्ड',
+    'sign_in_btn': 'साइन इन करें →',
+    'admin_brand_title': 'SmartBank व्यवस्थापक नियंत्रण',
+    'admin_brand_blurb': 'प्रतिबंधित पहुँच — केवल व्यवस्थापक। ग्राहक प्रबंधन, धोखाधड़ी निगरानी और विश्लेषण।',
+    'admin_sign_in': 'व्यवस्थापक साइन इन',
+    'admin_only': 'केवल अधिकृत व्यवस्थापक',
+    'admin_acc_label': 'व्यवस्थापक खाता संख्या',
+    'admin_acc_placeholder': 'जैसे 10000',
+    'admin_pw_label': 'व्यवस्थापक पासवर्ड',
+    'admin_pw_placeholder': 'व्यवस्थापक पासवर्ड',
+    'admin_login_btn': 'एडमिन पैनल खोलें →',
+    'admin_security': '🔒 यह पोर्टल केवल अधिकृत कर्मियों के लिए है।<br>सभी व्यवस्थापक कार्य लॉग किए जाते हैं।<br>अनधिकृत पहुँच की सूचना दी जाएगी।',
+    'lang_label': '🌐 भाषा',
+    // DASHBOARD NAV
+    'nav_ai': 'AI सहायक',
+    'nav_overview': 'अवलोकन',
+    'nav_history': 'इतिहास',
+    'nav_analytics': 'विश्लेषण',
+    'nav_scheduled': 'अनुसूचित',
+    'nav_banker': 'बैंकर सहायता',
+    'sign_out': '🚪 साइन आउट',
+    // DASHBOARD TOPBAR
+    'page_chat': 'AI सहायक',
+    'page_overview': 'अवलोकन',
+    'page_history': 'लेनदेन इतिहास',
+    'page_analytics': 'विश्लेषण',
+    'page_scheduled': 'अनुसूचित ट्रांसफर',
+    'page_banker': 'बैंकर सहायता',
+    // CHAT
+    'bot_name': 'SmartBank AI',
+    'bot_online': '● ऑनलाइन — NLP संचालित',
+    'chat_placeholder': 'कुछ भी पूछें या 🎙️ दबाकर बोलें...',
+    'auto_speak': '🔊 जवाब अपने आप बोलें',
+    'quick_balance': '💰 शेष',
+    'quick_history': '📋 इतिहास',
+    'quick_mini': '🧾 मिनी स्टेटमेंट',
+    'quick_analytics': '📊 विश्लेषण',
+    'quick_banker': '👨‍💼 बैंकर',
+    'quick_rates': '📈 ब्याज दर',
+    'balance_title': '💰 खाता शेष',
+    'savings_account': 'बचत खाता',
+    // OVERVIEW
+    'stat_balance': 'खाता शेष',
+    'stat_received': 'कुल प्राप्त',
+    'stat_sent': 'कुल भेजा',
+    'stat_flagged': 'चिह्नित लेनदेन',
+    'all_time': 'हमेशा',
+    'needs_review': 'समीक्षा आवश्यक',
+    'recent_txns': 'हाल के लेनदेन',
+    // HISTORY
+    'txn_history': 'लेनदेन इतिहास',
+    'txn_id': 'लेनदेन ID', 'type': 'प्रकार', 'from': 'से', 'to': 'को',
+    'amount': 'राशि', 'status': 'स्थिति', 'fraud_score': 'धोखाधड़ी स्कोर', 'date': 'तारीख',
+    // ANALYTICS
+    'total_sent': 'कुल भेजा', 'total_received': 'कुल प्राप्त',
+    'transactions': 'लेनदेन', 'avg_txn': 'औसत लेनदेन',
+    'monthly_chart': '📈 मासिक खर्च', 'category_chart': '🍩 श्रेणी विवरण',
+    // SCHEDULED
+    'schedule_title': '📅 ट्रांसफर शेड्यूल करें',
+    'schedule_sub': 'भविष्य की तारीख का ट्रांसफर सेट करें',
+    'recipient_acc': 'प्राप्तकर्ता खाता',
+    'amount_inr': 'राशि (₹)',
+    'schedule_datetime': 'शेड्यूल तारीख और समय',
+    'schedule_btn': 'ट्रांसफर शेड्यूल करें →',
+    'scheduled_transfers': 'अनुसूचित ट्रांसफर',
+    'scheduled_for': 'शेड्यूल किया गया', 'created': 'बनाया गया',
+    // BANKER
+    'connect_banker': 'बैंकर से जुड़ें',
+    'banker_sub': 'क्या AI हल नहीं कर सका?<br>सीधे बैंकिंग विशेषज्ञ से जुड़ें।',
+    'reason_label': 'संपर्क का कारण',
+    'reason_placeholder': 'यहाँ कारण टाइप करें या 🎙️ दबाकर बोलें…',
+    'request_banker': '📞 बैंकर सहायता माँगें',
+    'my_requests': '📋 मेरी अनुरोध',
+    'avg_wait': '⏱ औसत प्रतीक्षा समय: <strong style="color:var(--green)">2-5 मिनट</strong>',
+    'available': '🕐 उपलब्ध: <strong>सोम–शुक्र, सुबह 9:30 – 4 बजे</strong>',
+    'emergency': '📞 आपात: <strong>1800-XXX-XXXX (24×7)</strong>',
+    'speak_hint': '🎙️ बोलें — ऊपर टेक्स्ट दिखेगा। बाद में संपादित कर सकते हैं।',
+    'tap_to_speak': '🎙️ दबाएँ और अपना कारण बोलें',
+    // ADMIN
+    'admin_badge': 'व्यवस्थापक',
+    'full_access': 'पूर्ण पहुँच',
+    'dashboard': 'डैशबोर्ड',
+    'an_analytics': 'विश्लेषण',
+    'all_customers': 'सभी ग्राहक',
+    'add_customer': 'ग्राहक जोड़ें',
+    'an_transactions': 'लेनदेन',
+    'flagged': 'चिह्नित',
+    'banker_requests': 'बैंकर अनुरोध',
+    'chat_logs': 'AI चैट लॉग',
+    'an_scheduled': 'अनुसूचित',
+    'overview_section': 'अवलोकन',
+    'customers_section': 'ग्राहक',
+    'operations_section': 'परिचालन',
+    'monitoring_section': 'निगरानी',
+    'live': 'लाइव',
+    'refresh': '🔄 रीफ्रेश',
+    'new_customer': '➕ नया ग्राहक',
+  }
+};
+
+function T(key) {
+  return (TRANSLATIONS[window.SB_LANG] || TRANSLATIONS.en)[key] || (TRANSLATIONS.en[key] || key);
+}
+
+function applyLang(lang) {
+  window.SB_LANG = lang;
+  try { localStorage.setItem('sb_lang', lang); } catch(e) {}
+  // Update all data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = T(key);
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      const attr = el.getAttribute('data-i18n-attr') || 'placeholder';
+      el.setAttribute(attr, val);
+    } else {
+      el.innerHTML = val;
+    }
+  });
+  // Update lang switcher UI
+  document.querySelectorAll('.lang-switch-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+  // Fire a custom event for page-specific handlers
+  document.dispatchEvent(new CustomEvent('sb:langchange', { detail: { lang } }));
+}
+
+function initLang() {
+  let saved = 'en';
+  try { saved = localStorage.getItem('sb_lang') || 'en'; } catch(e) {}
+  applyLang(saved);
+}
+
+// Call on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', initLang);
+
+
+function switchLang(lang) {
+  applyLang(lang);
+  // update login button text that js controls
+  const cBtn = document.getElementById('cLoginBtn');
+  if (cBtn) cBtn.textContent = T('sign_in_btn');
+  const aBtn = document.getElementById('aLoginBtn');
+  if (aBtn) aBtn.textContent = T('admin_login_btn');
+}
+
+</script>
+</body>
+</html>
